@@ -24,7 +24,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@bitmatrix/esplora-api-client": "^0.0.8",
     "@bitmatrix/models": "^0.0.7",
+    "axios": "^0.24.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "rocksdb": "^5.2.0"
