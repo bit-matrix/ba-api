@@ -1,7 +1,7 @@
 cd /root/github/bit-matrix/ba-api
 git pull
 docker build -t ba-api .
-docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
+docker run -d -p 9900:9900 -v DataVolume1:/datavolume1 --network="host" ba-api
 
 ## List db files
 
@@ -13,7 +13,7 @@ docker build -t ba-api .
 
 ## run
 
-docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
+docker run -d -p 9900:9900 -v DataVolume1:/datavolume1 --network="host" ba-api
 
 ## run interactive
 
