@@ -56,6 +56,6 @@ RUN ls -a
 RUN npm install
 RUN npm run build
 
-EXPOSE 9900
+EXPOSE 9901
 
 CMD ["npm", "start"]
