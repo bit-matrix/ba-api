@@ -120,17 +120,18 @@ const chartDataDiff = (currentData: number, previousData: number) => {
   return { value: Math.abs(currentValue).toFixed(2), direction };
 };
 
-export const calculateChartData = (chartData: BmChart[], pool: Pool): ChartSummary => {
+export const calculateChartData = (chartData: BmChart[], poolId: string): ChartSummary => {
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(chartData);
   const allTvlData = groupByDailyTvl(chartData);
   const allFeesData: ChartData[] = groupBydailyVolume(chartData).map((d) => ({ ...d, close: d.close / 500 }));
+  const lastElement = chartData[chartData.length - 1];
 
   // live current time data
   const todayVolumeData = allVolumeData[allVolumeData.length - 1];
   const todayFeeData = allFeesData[allFeesData.length - 1];
-  const todayTvlData = (Number(pool.token.value) * 2) / unitValue;
-  const todayPrice = Number(pool.token.value) / Number(pool.quote.value);
+  const todayTvlData = (lastElement.value.token * 2) / unitValue;
+  const todayPrice = lastElement.value.token / lastElement.value.quote;
 
   // previous data
   let previousVolumeData: ChartData = { date: "", close: 0 };
@@ -200,7 +201,7 @@ export const calculateChartData = (chartData: BmChart[], pool: Pool): ChartSumma
   }
 
   const result: ChartSummary = {
-    poolId: pool.id,
+    poolId,
     tvl: {
       todayValue: todayTvlData,
       rate: tvlRate,

@@ -23,9 +23,7 @@ import { calculateChartData } from "../utils";
 export const chartController = {
   get: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const poolData = await pool(req.params.asset);
-
-      const data = calculateChartData(dummyChartData as any, poolData);
+      const data = calculateChartData(dummyChartData as any, req.params.asset);
 
       return res.status(200).send(data);
     } catch (error) {
@@ -41,6 +39,26 @@ export const chartController = {
       const newChart = await updateChart(asset, limit);
 
       return res.status(200).send(newChart);
+    } catch (error) {
+      return res.status(501).send({ status: false, error });
+    }
+  },
+
+  getPoolsChart: async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const poolIds: string = req.query;
+
+      console.log("poolIds :", poolIds);
+
+      const poolIdArray: string[] = poolIds.split(",");
+
+      const poolsData = poolIdArray.map((poolId) => {
+        return calculateChartData(dummyChartData as any, poolId);
+      });
+
+      console.log("dataaa : ", poolsData);
+
+      return res.status(200).send(poolsData);
     } catch (error) {
       return res.status(501).send({ status: false, error });
     }
