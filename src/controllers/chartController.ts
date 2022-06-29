@@ -46,17 +46,13 @@ export const chartController = {
 
   getPoolsChart: async (req: any, res: Response, next: NextFunction) => {
     try {
-      const poolIds: string = req.query;
-
-      console.log("poolIds :", poolIds);
+      const poolIds: string = req.query.ids;
 
       const poolIdArray: string[] = poolIds.split(",");
 
       const poolsData = poolIdArray.map((poolId) => {
         return calculateChartData(dummyChartData as any, poolId);
       });
-
-      console.log("dataaa : ", poolsData);
 
       return res.status(200).send(poolsData);
     } catch (error) {
