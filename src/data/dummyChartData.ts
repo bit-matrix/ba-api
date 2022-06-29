@@ -11407,4 +11407,12 @@ export const dummyChartData = [
     price: 33707,
     volume: { quote: 199232384, token: 6715526000000 },
   },
+  {
+    time: 1656506282,
+    ptxid: "74f7e9cd68defa9100992f7408b3895ea4caa951bd678e596c5f42cbb7e8f435",
+    method: "01",
+    value: { quote: 4407890052, token: 144969297000000, lp: 1981455854 },
+    price: 32888,
+    volume: { quote: 47000000, token: 1545736000000 },
+  },
 ];

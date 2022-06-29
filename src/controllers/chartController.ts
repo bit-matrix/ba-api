@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { pool } from "../business/db-client";
 import { updateChart } from "../business/updateChart";
 import { dummyChartData } from "../data/dummyChartData";
 import { ChartProvider } from "../providers/ChartProvider";
+import { calculateChartData } from "../utils";
 
 // export const chartController = {
 //   get: async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +23,11 @@ import { ChartProvider } from "../providers/ChartProvider";
 export const chartController = {
   get: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      return res.status(200).send(dummyChartData);
+      const poolData = await pool(req.params.asset);
+
+      const data = calculateChartData(dummyChartData as any, poolData);
+
+      return res.status(200).send(data);
     } catch (error) {
       return res.status(501).send({ status: false, error });
     }
