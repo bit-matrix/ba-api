@@ -1,7 +1,23 @@
-cd /root/github/bit-matrix/ba-api
+# Install
+
+mkdir /var/lib/docker/volumes/DataVolume1/\_data/new-pool-chart
+
+mkdir /root/github/bit-matrix/new-pool
+cd /root/github/bit-matrix/new-pool
+git clone https://github.com/bit-matrix/ba-api.git
+cd ba-api
+git checkout -b new-pool
+git branch --set-upstream-to=origin/new-pool new-pool
 git pull
-docker build -t ba-api .
-docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
+docker build -t ba-api-new .
+docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+
+# Update
+
+cd /root/github/bit-matrix/new-pool/ba-api
+git pull
+docker build -t ba-api-new .
+docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
 
 ## List db files
 
@@ -17,11 +33,11 @@ docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
 
 ## run interactive
 
-docker run -it -p 9900:9900 -v DataVolume1:/datavolume1 ba-api
+docker run -it -p 9901:9901 -v DataVolume1:/datavolume1 ba-api
 
 ## run interactive, remove when stop
 
-docker run -it --rm -p 9900:9900 -v DataVolume1:/datavolume1 ba-api
+docker run -it --rm -p 9901:9901 -v DataVolume1:/datavolume1/new-pool ba-api-new
 
 ## image list
 

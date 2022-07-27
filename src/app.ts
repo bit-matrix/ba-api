@@ -7,6 +7,9 @@ import chartRoutes from "./routes/chartRoutes";
 import { init } from "@bitmatrix/esplora-api-client";
 import { updateChart } from "./business/updateChart";
 import { pools } from "./business/db-client";
+import { Server } from "socket.io";
+import { calculateChartData } from "./utils";
+import { dummyChartData } from "./data/dummyChartData";
 
 init(ELECTRS_URL);
 
@@ -24,6 +27,33 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(cors());
 
 const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  socket.on("fetchpool", (poolId) => {
+    const data = calculateChartData(dummyChartData as any, poolId);
+
+    socket.emit("poolchart", data);
+  });
+
+  socket.on("fetchpools", (poolIds) => {
+    const poolsData = poolIds.map((poolId: string) => {
+      return calculateChartData(dummyChartData as any, poolId);
+    });
+
+    socket.emit("poolschart", poolsData);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
 
 app.get("/", async (req, res, next) => {
   res.send("hello from ba-api");
