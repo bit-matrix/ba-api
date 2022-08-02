@@ -32,4 +32,5 @@ export class ChartProvider {
 
   get = async (key: string): Promise<BmChart[] | undefined> => ChartProvider._dbProvider.get<BmChart[]>(key);
   put = async (key: string, value: BmChart[]): Promise<void> => ChartProvider._dbProvider.put<BmChart[]>(key, value);
+  // getMany = async (key: string, value: BmChart[]): Promise<void> => ChartProvider._dbProvider.getMany<BmChart[]>(key, value);
 }
