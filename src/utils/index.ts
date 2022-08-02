@@ -1,5 +1,5 @@
-import { BmChart, ChartSummary, Pool } from "@bitmatrix/models";
-import { ChartData } from "@bitmatrix/models/ChartData";
+import { BmChart, ChartSummary } from "@bitmatrix/models";
+import { ChartData } from "@bitmatrix/models";
 
 const unitValue = 100000000;
 
