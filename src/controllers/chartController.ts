@@ -23,10 +23,10 @@ export const chartController = {
   get: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const asset = req.params.asset;
-
       const chartProvider = await ChartProvider.getProvider();
       const chartData = await chartProvider.get(asset);
-      const data = calculateChartData(chartData || [], req.params.asset);
+
+      const data = calculateChartData(chartData || [], asset);
 
       return res.status(200).send(data);
     } catch (error) {
@@ -38,9 +38,11 @@ export const chartController = {
   put: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const asset = req.params.asset;
-      const data = req.body.data;
+      const data = req.body;
 
       const newChart = await updateChart(asset, data);
+
+      // @To-do - add socket emit when data updated
 
       return res.status(200).send(newChart);
     } catch (error) {

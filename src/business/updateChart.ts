@@ -3,7 +3,11 @@ import { ChartProvider } from "../providers/ChartProvider";
 
 export const updateChart = async (asset: string, data: BmChart): Promise<BmChart[]> => {
   const chartProvider = await ChartProvider.getProvider();
-  const exist: BmChart[] = (await chartProvider.get(asset)) || [];
+  let exist: BmChart[] = [];
+
+  const databaseData = await chartProvider.get(asset);
+
+  if (databaseData && databaseData[0] !== null) exist = databaseData;
 
   const result: BmChart[] = [...exist];
 
