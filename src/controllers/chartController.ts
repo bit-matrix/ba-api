@@ -27,6 +27,9 @@ export const chartController = {
       const chartData = await chartProvider.get(asset);
       const data = calculateChartData(chartData || [], asset);
 
+      const bitmatrixSocket = BitmatrixSocket.getInstance();
+      bitmatrixSocket.currentSocket?.emit("poolchart", data);
+
       return res.status(200).send(data);
     } catch (error) {
       return res.status(501).send({ status: false, error });
