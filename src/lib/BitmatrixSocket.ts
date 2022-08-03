@@ -32,10 +32,10 @@ export class BitmatrixSocket {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
 
-      const chartProvider = await ChartProvider.getProvider();
-      const chartData = await chartProvider.get("0b427dc1862dc6d658ccd109b8d54cf0dcd8848626c2bdb5e0ddce0f17383ff7");
+      // const chartProvider = await ChartProvider.getProvider();
+      // const chartData = await chartProvider.get("0b427dc1862dc6d658ccd109b8d54cf0dcd8848626c2bdb5e0ddce0f17383ff7");
 
-      socket.emit("poolchart", chartData);
+      // socket.emit("poolchart", chartData);
 
       this.currentSocket = socket;
 
