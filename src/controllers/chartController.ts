@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { updateChart } from "../business/updateChart";
-import { dummyChartData } from "../data/dummyChartData";
+import { BitmatrixSocket } from "../lib/BitmatrixSocket";
 import { ChartProvider } from "../providers/ChartProvider";
 import { calculateChartData } from "../utils";
 
@@ -25,7 +25,6 @@ export const chartController = {
       const asset = req.params.asset;
       const chartProvider = await ChartProvider.getProvider();
       const chartData = await chartProvider.get(asset);
-
       const data = calculateChartData(chartData || [], asset);
 
       return res.status(200).send(data);
@@ -39,10 +38,12 @@ export const chartController = {
     try {
       const asset = req.params.asset;
       const data = req.body;
-
       const newChart = await updateChart(asset, data);
 
-      // @To-do - add socket emit when data updated
+      const bitmatrixSocket = BitmatrixSocket.getInstance();
+      const calculatedData = calculateChartData(newChart, asset);
+
+      bitmatrixSocket.currentSocket?.emit("poolchart", calculatedData);
 
       return res.status(200).send(newChart);
     } catch (error) {
@@ -53,13 +54,18 @@ export const chartController = {
   getPoolsChart: async (req: any, res: Response, next: NextFunction) => {
     try {
       const poolIds: string = req.query.ids;
-
       const poolIdArray: string[] = poolIds.split(",");
 
       // @TO-DO data çekilecek
-      const poolsData = poolIdArray.map((poolId) => {
-        return calculateChartData(dummyChartData as any, poolId);
-      });
+      const chartProvider = await ChartProvider.getProvider();
+
+      const poolsData = await Promise.all(
+        poolIdArray.map(async (poolId) => {
+          const chartData = await chartProvider.get(poolId);
+
+          return calculateChartData(chartData as any, poolId);
+        })
+      );
 
       return res.status(200).send(poolsData);
     } catch (error) {
