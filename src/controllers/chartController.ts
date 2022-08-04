@@ -70,6 +70,9 @@ export const chartController = {
         })
       );
 
+      const bitmatrixSocket = BitmatrixSocket.getInstance();
+      bitmatrixSocket.currentSocket?.emit("poolchart", poolsData);
+
       return res.status(200).send(poolsData);
     } catch (error) {
       return res.status(501).send({ status: false, error });
