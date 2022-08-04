@@ -59,7 +59,6 @@ export const chartController = {
       const poolIds: string = req.query.ids;
       const poolIdArray: string[] = poolIds.split(",");
 
-      // @TO-DO data çekilecek
       const chartProvider = await ChartProvider.getProvider();
 
       const poolsData = await Promise.all(
