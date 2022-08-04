@@ -8,10 +8,9 @@ import { init } from "@bitmatrix/esplora-api-client";
 import { Server } from "socket.io";
 import { calculateChartData } from "./utils";
 import { dummyChartData } from "./data/dummyChartData";
+import Redis from "ioredis";
 
-import redis from "ioredis";
-
-const client = redis.createClient();
+const client = new Redis("redis://localhost:6379");
 
 init(ELECTRS_URL);
 
@@ -65,7 +64,11 @@ app.use("/chart", chartRoutes);
 
 client.monitor((err, monitor) => {
   monitor?.on("monitor", (time, args) => {
-    console.log(time, ":", args);
+    if (args[0] === "set" || args[0] === "del" || args[0] === "put") {
+      client.keys("*").then((result) => {
+        console.log("data", result); // Prints "value"
+      });
+    }
   });
 });
 
