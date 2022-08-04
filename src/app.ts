@@ -9,6 +9,10 @@ import { Server } from "socket.io";
 import { calculateChartData } from "./utils";
 import { dummyChartData } from "./data/dummyChartData";
 
+import redis from "ioredis";
+
+const client = redis.createClient();
+
 init(ELECTRS_URL);
 
 const onExit = async () => {
@@ -58,6 +62,12 @@ app.get("/", async (req, res, next) => {
 });
 
 app.use("/chart", chartRoutes);
+
+client.monitor((err, monitor) => {
+  monitor?.on("monitor", (time, args) => {
+    console.log(time, ":", args);
+  });
+});
 
 server.listen(LISTEN_PORT, () => {
   console.log("BA API Service is using DATA_DIR:" + DATA_DIR);
