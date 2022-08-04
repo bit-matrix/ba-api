@@ -2,6 +2,8 @@ import { Server, Socket } from "socket.io";
 import { Server as HttpServer } from "http";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { ChartProvider } from "../providers/ChartProvider";
+import { calculateChartData } from "../utils";
+import { BmChartResult } from "@bitmatrix/models";
 
 export class BitmatrixSocket {
   private io: Server;
@@ -32,10 +34,14 @@ export class BitmatrixSocket {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
 
-      // const chartProvider = await ChartProvider.getProvider();
-      // const chartData = await chartProvider.get("0b427dc1862dc6d658ccd109b8d54cf0dcd8848626c2bdb5e0ddce0f17383ff7");
+      const chartProvider = await ChartProvider.getProvider();
+      const chartData = await chartProvider.getMany();
 
-      // socket.emit("poolchart", chartData);
+      const calculatedPoolsData = chartData.map((data: BmChartResult) => {
+        return calculateChartData(data.val, data.key);
+      });
+
+      socket.emit("poolchart", calculatedPoolsData);
 
       this.currentSocket = socket;
 
