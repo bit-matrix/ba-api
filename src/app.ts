@@ -1,7 +1,7 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import { DATA_DIR, LISTEN_PORT, ELECTRS_URL } from "./env";
+import { DATA_DIR, LISTEN_PORT, ELECTRS_URL, REDIS_URL } from "./env";
 
 import chartRoutes from "./routes/chartRoutes";
 import { init } from "@bitmatrix/esplora-api-client";
@@ -10,7 +10,7 @@ import { calculateChartData } from "./utils";
 import { dummyChartData } from "./data/dummyChartData";
 import Redis from "ioredis";
 
-const client = new Redis("redis://localhost:6379");
+const client = new Redis(REDIS_URL);
 
 init(ELECTRS_URL);
 
