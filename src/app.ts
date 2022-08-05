@@ -2,12 +2,11 @@ import http from "http";
 import express from "express";
 import cors from "cors";
 import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
-
 import chartRoutes from "./routes/chartRoutes";
 import Redis from "ioredis";
+import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 
 const client = new Redis(REDIS_URL);
-import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 
 const onExit = async () => {
   console.log("BA API Service stopped.");
