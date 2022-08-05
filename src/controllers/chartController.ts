@@ -77,4 +77,21 @@ export const chartController = {
       return res.status(501).send({ status: false, error });
     }
   },
+
+  // getAllPoolsChart: async (req: any, res: Response, next: NextFunction) => {
+  //   try {
+  //     const provider = await ChartProvider.getProvider();
+  //     const poolsData = await provider.getMany();
+
+  //     const calculatedPoolsData = poolsData.map((data: BmChartResult) => {
+  //       const poolId = data.key;
+  //       const poolDatas = data.val;
+  //       return calculateChartData(poolDatas, poolId);
+  //     });
+
+  //     return res.status(200).send(calculatedPoolsData);
+  //   } catch (error) {
+  //     return res.status(501).send({ status: false, error });
+  //   }
+  // },
 };
