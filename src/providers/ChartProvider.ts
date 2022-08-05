@@ -1,6 +1,6 @@
+import { BmChart, BmChartResult } from "@bitmatrix/models";
 import rocksdb from "rocksdb";
 import { DATA_DIR } from "../env";
-import { BmChart } from "../model/BmChart";
 import { RocksDbProvider } from "./RocksDbProvider";
 
 export class ChartProvider {
@@ -33,4 +33,8 @@ export class ChartProvider {
   get = async (key: string): Promise<BmChart[] | undefined> => ChartProvider._dbProvider.get<BmChart[]>(key);
   put = async (key: string, value: BmChart[]): Promise<void> => ChartProvider._dbProvider.put<BmChart[]>(key, value);
   // getMany = async (key: string, value: BmChart[]): Promise<void> => ChartProvider._dbProvider.getMany<BmChart[]>(key, value);
+
+  //getMany = async (limit = 1000, reverse = true): Promise<BmChartResult[]> => ChartProvider._dbProvider.getMany<BmChart[]>(limit, reverse);
+
+  getMany = async (): Promise<BmChartResult[]> => ChartProvider._dbProvider.getMany<BmChart[]>();
 }

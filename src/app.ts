@@ -1,18 +1,13 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import { DATA_DIR, LISTEN_PORT, ELECTRS_URL, REDIS_URL } from "./env";
+import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
 
 import chartRoutes from "./routes/chartRoutes";
-import { init } from "@bitmatrix/esplora-api-client";
-import { Server } from "socket.io";
-import { calculateChartData } from "./utils";
-import { dummyChartData } from "./data/dummyChartData";
 import Redis from "ioredis";
 
 const client = new Redis(REDIS_URL);
-
-init(ELECTRS_URL);
+import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 
 const onExit = async () => {
   console.log("BA API Service stopped.");
@@ -28,33 +23,7 @@ app.use(express.urlencoded()); // to support URL-encoded bodies
 app.use(cors());
 
 const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  socket.on("fetchpool", (poolId) => {
-    const data = calculateChartData(dummyChartData as any, poolId);
-
-    socket.emit("poolchart", data);
-  });
-
-  socket.on("fetchpools", (poolIds) => {
-    const poolsData = poolIds.map((poolId: string) => {
-      return calculateChartData(dummyChartData as any, poolId);
-    });
-
-    socket.emit("poolschart", poolsData);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
-});
+BitmatrixSocket.getInstance(server);
 
 app.get("/", async (req, res, next) => {
   res.send("hello from ba-api");
