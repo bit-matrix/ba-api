@@ -10,14 +10,14 @@ git checkout -b new-pool
 git branch --set-upstream-to=origin/new-pool new-pool
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 --network="host" ba-api-new
 
 # Update
 
 cd /root/github/bit-matrix/new-pool/ba-api
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 --network="host" ba-api-new
 
 ## List db files
 
@@ -33,11 +33,11 @@ docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
 
 ## run interactive
 
-docker run -it -p 9901:9901 -v DataVolume1:/datavolume1 ba-api
+docker run -it -p 9902:9902 -v DataVolume1:/datavolume1 ba-api
 
 ## run interactive, remove when stop
 
-docker run -it --rm -p 9901:9901 -v DataVolume1:/datavolume1/new-pool ba-api-new
+docker run -it --rm -p 9902:9902 -v DataVolume1:/datavolume1/new-pool ba-api-new
 
 ## image list
 
