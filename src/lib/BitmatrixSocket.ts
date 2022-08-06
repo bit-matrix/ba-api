@@ -4,6 +4,8 @@ import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { ChartProvider } from "../providers/ChartProvider";
 import { calculateChartData } from "../utils";
 import { BmChartResult } from "@bitmatrix/models";
+import { fetchRedisAllData } from "../utils/redis";
+import Redis from "ioredis";
 
 export class BitmatrixSocket {
   private io: Server;
@@ -11,7 +13,7 @@ export class BitmatrixSocket {
 
   currentSocket?: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
 
-  constructor(server: HttpServer) {
+  constructor(server: HttpServer, redisClient: Redis) {
     this.io = new Server(server, {
       cors: {
         origin: "http://localhost:3000",
@@ -19,18 +21,18 @@ export class BitmatrixSocket {
       },
     });
 
-    this.connect();
+    this.connect(redisClient);
   }
 
-  public static getInstance(server?: HttpServer): BitmatrixSocket {
+  public static getInstance(server?: HttpServer, redisClient?: Redis): BitmatrixSocket {
     if (!BitmatrixSocket.instance) {
-      if (server) BitmatrixSocket.instance = new BitmatrixSocket(server);
+      if (server && redisClient) BitmatrixSocket.instance = new BitmatrixSocket(server, redisClient);
     }
 
     return BitmatrixSocket.instance;
   }
 
-  private connect = () => {
+  private connect = (client: Redis) => {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
 
@@ -42,6 +44,8 @@ export class BitmatrixSocket {
       });
 
       socket.emit("poolchart", calculatedPoolsData);
+
+      socket.emit("redis-values", await fetchRedisAllData(client));
 
       this.currentSocket = socket;
 
