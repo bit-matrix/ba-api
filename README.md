@@ -10,7 +10,7 @@ git checkout -b new-pool
 git branch --set-upstream-to=origin/new-pool new-pool
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker run -d -p 9901:9901 -v HistoryDataVolume:/historydatavolume ba-api-new
 
 # Update
 

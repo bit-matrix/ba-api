@@ -1,17 +1,23 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import { DATA_DIR, LISTEN_PORT, ELECTRS_URL } from "./env";
-
+import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
 import chartRoutes from "./routes/chartRoutes";
-import { init } from "@bitmatrix/esplora-api-client";
-import { updateChart } from "./business/updateChart";
-import { pools } from "./business/db-client";
-import { Server } from "socket.io";
-import { calculateChartData } from "./utils";
-import { dummyChartData } from "./data/dummyChartData";
+import Redis from "ioredis";
+import { BitmatrixSocket } from "./lib/BitmatrixSocket";
+import { BitmatrixStoreData, BmChart, BmChartResult } from "@bitmatrix/models";
+import { ChartProvider } from "./providers/ChartProvider";
+import { fetchRedisAllData } from "./utils/redis";
 
-init(ELECTRS_URL);
+const client = new Redis(REDIS_URL);
+
+enum TX_STATUS {
+  PENDING,
+  WAITING_PTX,
+  WAITING_PTX_CONFIRM,
+  SUCCESS,
+  FAILED,
+}
 
 const onExit = async () => {
   console.log("BA API Service stopped.");
@@ -28,55 +34,60 @@ app.use(cors());
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  socket.on("fetchpool", (poolId) => {
-    const data = calculateChartData(dummyChartData as any, poolId);
-
-    socket.emit("poolchart", data);
-  });
-
-  socket.on("fetchpools", (poolIds) => {
-    const poolsData = poolIds.map((poolId: string) => {
-      return calculateChartData(dummyChartData as any, poolId);
-    });
-
-    socket.emit("poolschart", poolsData);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
-});
-
 app.get("/", async (req, res, next) => {
   res.send("hello from ba-api");
 });
 
 app.use("/chart", chartRoutes);
 
+const socketInstance = BitmatrixSocket.getInstance(server, client);
+
+client.monitor((err, monitor) => {
+  monitor?.on("monitor", async (time, args) => {
+    if (args[0] === "set" || args[0] === "del" || args[0] === "put") {
+      const parsedValues = await fetchRedisAllData(client);
+
+      socketInstance.currentSocket?.emit("redis-values", parsedValues);
+    }
+  });
+});
+
+// io.currentSocket?.on("checkTxStatus", async (txIds) => {
+//   const txIdsArr: string[] = txIds.split(",");
+//   // const chartProvider = await ChartProvider.getProvider();
+
+//   console.log("txIdsArr", txIdsArr);
+
+//   const result = txIdsArr.map(async (tia) => {
+//     const redisData = parsedValues.find((val) => val.commitmentData.transaction.txid === tia);
+
+//     if (redisData) {
+//       if (redisData.poolTxInfo) {
+//         console.log("case1 : ", tia);
+//         return { txId: tia, poolTxId: redisData.poolTxInfo?.txId, status: TX_STATUS.WAITING_PTX_CONFIRM };
+//       }
+//       console.log("case2: ", tia);
+//       return { txId: tia, poolTxId: "", status: TX_STATUS.WAITING_PTX };
+//     }
+
+//     // const allPoolHistory: BmChartResult[] | undefined = await chartProvider.getMany();
+
+//     // if (allPoolHistory) {
+//     //   const isExist = allPoolHistory.findIndex((poolHistory) => poolHistory.ptxid === fd.poolTxInfo?.txId);
+
+//     //   if (isExist) {
+//     //     const status = fd.poolTxInfo?.isSuccess ? TX_STATUS.SUCCESS : TX_STATUS.FAILED;
+//     //     return { txId: fd.commitmentData.transaction.txid, poolTxId: fd.poolTxInfo?.txId, status };
+//     //   }
+//     // }
+//     console.log("case3: ", tia);
+//     return { txId: tia, poolTxId: "", status: TX_STATUS.PENDING };
+//   });
+
+//   io.currentSocket?.emit("checkTxStatusResponse", result);
+// });
+
 server.listen(LISTEN_PORT, () => {
   console.log("BA API Service is using DATA_DIR:" + DATA_DIR);
   console.log("BA API Service started on *:" + LISTEN_PORT);
-  worker();
 });
-
-const worker = async () => {
-  try {
-    const ps = await pools();
-    for (let i = 0; i < ps.length; i++) {
-      const p = ps[i];
-      await updateChart(p.id, 10000);
-    }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setTimeout(() => worker(), 60 * 1000);
-  }
-};
