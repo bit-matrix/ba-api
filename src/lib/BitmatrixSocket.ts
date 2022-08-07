@@ -49,6 +49,29 @@ export class BitmatrixSocket {
 
       socket.emit("redis-values", redisData);
 
+      socket.on("checkTxStatus", (txIds) => {
+        const txIdsArr = txIds.split(",");
+
+        enum TX_STATUS {
+          PENDING,
+          WAITING_PTX,
+          WAITING_PTX_CONFIRM,
+          SUCCESS,
+          FAILED,
+        }
+
+        const txStatuses = txIdsArr.map((tx: any) => {
+          return {
+            txId: tx,
+            poolTxId: "",
+            status: TX_STATUS.PENDING,
+            timestamp: Math.floor(Date.now() / 1000),
+          };
+        });
+
+        socket.emit("checkTxStatusResponse", txStatuses);
+      });
+
       this.currentSocket = socket;
 
       socket.on("disconnect", () => {
