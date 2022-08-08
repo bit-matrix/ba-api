@@ -6,18 +6,18 @@ mkdir /root/github/bit-matrix/new-pool
 cd /root/github/bit-matrix/new-pool
 git clone https://github.com/bit-matrix/ba-api.git
 cd ba-api
-git checkout -b new-pool
-git branch --set-upstream-to=origin/new-pool new-pool
+git checkout -b v2
+git branch --set-upstream-to=origin/v2 ba-api-v2
 git pull
-docker build -t ba-api-new .
-docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker build -t ba-api-v2 .
+docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 ba-api-v2
 
 # Update
 
 cd /root/github/bit-matrix/new-pool/ba-api
 git pull
-docker build -t ba-api-new .
-docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker build -t ba-api-v2 .
+docker run -d -p 9902:9902 -v DataVolume1:/datavolume1 ba-api-v2
 
 ## List db files
 
