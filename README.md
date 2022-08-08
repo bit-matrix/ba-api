@@ -1,6 +1,6 @@
 # Install
 
-mkdir /var/lib/docker/volumes/DataVolume1/\_data/new-pool-chart
+mkdir /var/lib/docker/volumes/HistoryDataVolume/\_data/new-pool-chart
 
 mkdir /root/github/bit-matrix/new-pool
 cd /root/github/bit-matrix/new-pool
