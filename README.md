@@ -29,7 +29,7 @@ docker build -t ba-api .
 
 ## run
 
-docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
+docker run -d -v HistoryDataVolumeV2:/historydatavolumev2 --network="host" ba-api
 
 ## run interactive
 
