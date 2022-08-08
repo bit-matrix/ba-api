@@ -37,7 +37,7 @@ docker run -it -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2 ba-api
 
 ## run interactive, remove when stop
 
-docker run -it --rm -p 9902:9902 -v DataVolume1:/datavolume1/new-pool ba-api-new
+docker run -it --rm -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2/new-pool ba-api-new
 
 ## image list
 
