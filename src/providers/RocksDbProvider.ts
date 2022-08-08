@@ -46,40 +46,33 @@ export class RocksDbProvider {
     });
   };
 
-  getMany = async <T>(limit = 10, reverse = true): Promise<{ key: string; val: T }[]> => {
+  getMany = async <T>(): Promise<{ key: string; val: T }[]> => {
     return new Promise<{ key: string; val: T }[]>(async (resolve, reject) => {
       const result: { key: string; val: T }[] = [];
 
       try {
-        const it: rocksdb.Iterator = this.db.iterator({ reverse, limit });
+        const it: rocksdb.Iterator = this.db.iterator();
 
         let i = 0;
         const next = () => {
-          if (i < limit) {
-            i++;
-
-            it.next((err: Error | undefined, key: rocksdb.Bytes, val: rocksdb.Bytes) => {
-              if (err) {
-                if (err.message === "NotFound: ") return resolve([]);
-                console.error("RocksDbProvider.getMany.iterator.next.error", err);
-                return reject();
-              } else if (key === undefined && val === undefined) {
-                it.end(() => {});
-                // console.log("it.next.finished");
-                return resolve(result);
-              } else {
-                // console.log("r: " + key.toString());
-                result.push({
-                  key: key.toString("utf8"),
-                  val: <T>JSON.parse(val.toString("utf8")),
-                });
-                next();
-              }
-            });
-          } else {
-            it.end(() => {});
-            return resolve(result);
-          }
+          it.next((err: Error | undefined, key: rocksdb.Bytes, val: rocksdb.Bytes) => {
+            if (err) {
+              if (err.message === "NotFound: ") return resolve([]);
+              console.error("RocksDbProvider.getMany.iterator.next.error", err);
+              return reject();
+            } else if (key === undefined && val === undefined) {
+              it.end(() => {});
+              // console.log("it.next.finished");
+              return resolve(result);
+            } else {
+              // console.log("r: " + key.toString());
+              result.push({
+                key: key.toString("utf8"),
+                val: <T>JSON.parse(val.toString("utf8")),
+              });
+              next();
+            }
+          });
         };
 
         next();
