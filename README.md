@@ -6,9 +6,7 @@ mkdir /root/github/bit-matrix/new-pool
 cd /root/github/bit-matrix/new-pool
 git clone https://github.com/bit-matrix/ba-api.git
 cd ba-api
-git checkout -b v2
-git branch --set-upstream-to=origin/v2 ba-api-v2
-git pull
+git checkout v2
 docker build -t ba-api-v2 .
 docker run -d -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2 ba-api-v2
 
@@ -25,19 +23,19 @@ ls /var/lib/docker/volumes/HistoryDataVolumeV2/
 
 ## build
 
-docker build -t ba-api .
+docker build -t ba-api-v2 .
 
 ## run
 
-docker run -d -v HistoryDataVolumeV2:/historydatavolumev2 --network="host" ba-api
+docker run -d -v HistoryDataVolumeV2:/historydatavolumev2 --network="host" ba-api-v2
 
 ## run interactive
 
-docker run -it -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2 ba-api
+docker run -it -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2 ba-api-v2
 
 ## run interactive, remove when stop
 
-docker run -it --rm -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2/new-pool ba-api-new
+docker run -it --rm -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2/new-pool ba-api-v2-new
 
 ## image list
 
