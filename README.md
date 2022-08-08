@@ -33,7 +33,7 @@ docker run -d -v DataVolume1:/datavolume1 --network="host" ba-api
 
 ## run interactive
 
-docker run -it -p 9902:9902 -v DataVolume1:/datavolume1 ba-api
+docker run -it -p 9902:9902 -v HistoryDataVolumeV2:/historydatavolumev2 ba-api
 
 ## run interactive, remove when stop
 
