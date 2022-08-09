@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { chartController } from "../controllers/chartController";
+import { poolTxHistoryController } from "../controllers/poolTxHistoryController";
 
 const ptxRoutes = Router();
 
-ptxRoutes.route("/:asset").put(chartController.put);
+ptxRoutes.route("/:asset").put(poolTxHistoryController.put);
 
 export default ptxRoutes;

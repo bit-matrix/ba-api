@@ -22,14 +22,14 @@ export class RocksDbProvider {
     });
   };
 
-  put = async <T>(key: string, value: T): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
+  put = async <T>(key: string, value: T): Promise<T> => {
+    return new Promise<T>((resolve, reject) => {
       this.db.put(key, Buffer.from(JSON.stringify(value)), { sync: true }, (err: Error | undefined) => {
         if (err) {
           console.error("RocksDbProvider.put.error", err);
           return reject(err);
         }
-        return resolve();
+        return resolve(value);
       });
     });
   };
