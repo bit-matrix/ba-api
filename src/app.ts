@@ -1,12 +1,11 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
-import chartRoutes from "./routes/chartRoutes";
 import Redis from "ioredis";
+import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
 import { BitmatrixSocket } from "./lib/BitmatrixSocket";
-import { BitmatrixStoreData, BmChart, BmChartResult } from "@bitmatrix/models";
-import { ChartProvider } from "./providers/ChartProvider";
+import chartRoutes from "./routes/chartRoutes";
+import cmtxRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
 
 const client = new Redis(REDIS_URL);
@@ -39,6 +38,7 @@ app.get("/", async (req, res, next) => {
 });
 
 app.use("/chart", chartRoutes);
+app.use("/cmtx", cmtxRoutes);
 
 const socketInstance = BitmatrixSocket.getInstance(server, client);
 
