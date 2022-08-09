@@ -1,6 +1,6 @@
 # Install
 
-mkdir /var/lib/docker/volumes/DataVolume1/\_data/new-pool-chart
+mkdir /var/lib/docker/volumes/HistoryDataVolume/\_data/new-pool-chart
 
 mkdir /root/github/bit-matrix/new-pool
 cd /root/github/bit-matrix/new-pool
@@ -17,7 +17,7 @@ docker run -d -p 9901:9901 -v HistoryDataVolume:/historydatavolume ba-api-new
 cd /root/github/bit-matrix/new-pool/ba-api
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v DataVolume1:/datavolume1 --network="host" ba-api-new
+docker run -d -p 9901:9901 -v Historydatavolume:/historydatavolume --network="host" ba-api-new
 
 ## List db files
 
