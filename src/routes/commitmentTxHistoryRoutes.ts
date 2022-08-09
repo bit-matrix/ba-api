@@ -3,6 +3,6 @@ import { commitmentTxHistoryController } from "../controllers/commitmentTxHistor
 
 const cmtxRoutes = Router();
 
-cmtxRoutes.route("/:txId").get(commitmentTxHistoryController.get).put(commitmentTxHistoryController.put);
+cmtxRoutes.route("/:txId").get(commitmentTxHistoryController.get).put(commitmentTxHistoryController.post);
 
 export default cmtxRoutes;

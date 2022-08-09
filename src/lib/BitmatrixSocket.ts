@@ -6,6 +6,7 @@ import { calculateChartData } from "../utils";
 import { BmChartResult } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
 import Redis from "ioredis";
+import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 
 export class BitmatrixSocket {
   private io: Server;
@@ -48,6 +49,11 @@ export class BitmatrixSocket {
       const redisData = await fetchRedisAllData(client);
 
       socket.emit("redis-values", redisData);
+
+      const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
+      const allCtxHistory = await commitmentTxHistoryProvider.getMany();
+
+      socket.emit("ctxHistory", allCtxHistory);
 
       socket.on("checkTxStatus", (txIds) => {
         const txIdsArr = txIds.split(",");

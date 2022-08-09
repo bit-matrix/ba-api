@@ -1,6 +1,7 @@
 import rocksdb from "rocksdb";
 import { DATA_DIR } from "../env";
 import { CommitmentTxHistory } from "../model/CommitmentTxHistory";
+import { CommitmentTxHistoryResult } from "../model/CommitmentTxHistoryResult";
 import { RocksDbProvider } from "./RocksDbProvider";
 
 export class CommitmentTxHistoryProvider {
@@ -32,5 +33,7 @@ export class CommitmentTxHistoryProvider {
 
   get = async (key: string): Promise<CommitmentTxHistory | undefined> => CommitmentTxHistoryProvider._dbProvider.get<CommitmentTxHistory>(key);
 
-  put = async (key: string, value: CommitmentTxHistory): Promise<void> => CommitmentTxHistoryProvider._dbProvider.put<CommitmentTxHistory>(key, value);
+  put = async (key: string, value: CommitmentTxHistory): Promise<CommitmentTxHistory> => CommitmentTxHistoryProvider._dbProvider.put<CommitmentTxHistory>(key, value);
+
+  getMany = async (): Promise<CommitmentTxHistoryResult[]> => CommitmentTxHistoryProvider._dbProvider.getMany<CommitmentTxHistory[]>();
 }

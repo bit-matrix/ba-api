@@ -31,7 +31,7 @@ export class PoolTxHistoryProvider {
   };
 
   get = async (key: string): Promise<BmChart[] | undefined> => PoolTxHistoryProvider._dbProvider.get<BmChart[]>(key);
-  put = async (key: string, value: BmChart[]): Promise<void> => PoolTxHistoryProvider._dbProvider.put<BmChart[]>(key, value);
+  put = async (key: string, value: BmChart[]): Promise<BmChart[]> => PoolTxHistoryProvider._dbProvider.put<BmChart[]>(key, value);
   // getMany = async (key: string, value: BmChart[]): Promise<void> => ChartProvider._dbProvider.getMany<BmChart[]>(key, value);
 
   //getMany = async (limit = 1000, reverse = true): Promise<BmChartResult[]> => ChartProvider._dbProvider.getMany<BmChart[]>(limit, reverse);
