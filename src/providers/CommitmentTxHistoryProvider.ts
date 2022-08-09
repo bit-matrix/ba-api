@@ -1,6 +1,6 @@
 import rocksdb from "rocksdb";
 import { DATA_DIR } from "../env";
-import { CommitmentTxHistory } from "../model/CommitmentTxHistory";
+import { CommitmentTxHistory } from "@bitmatrix/models";
 import { RocksDbProvider } from "./RocksDbProvider";
 
 export class CommitmentTxHistoryProvider {
