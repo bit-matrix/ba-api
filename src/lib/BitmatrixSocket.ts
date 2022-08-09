@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { Server as HttpServer } from "http";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { ChartProvider } from "../providers/ChartProvider";
+import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
 import { BmChartResult } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
@@ -36,8 +36,8 @@ export class BitmatrixSocket {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
 
-      const chartProvider = await ChartProvider.getProvider();
-      const chartData = await chartProvider.getMany();
+      const poolTxHistoryProvider = await PoolTxHistoryProvider.getProvider();
+      const chartData = await poolTxHistoryProvider.getMany();
 
       const calculatedPoolsData = chartData.map((data: BmChartResult) => {
         return calculateChartData(data.val, data.key);
