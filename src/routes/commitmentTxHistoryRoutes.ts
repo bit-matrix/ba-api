@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { commitmentTxHistoryController } from "../controllers/commitmentTxHistoryController";
 
-const cmtxRoutes = Router();
+const ctxHistoryRoutes = Router();
 
-cmtxRoutes.route("/:txId").get(commitmentTxHistoryController.get).put(commitmentTxHistoryController.post);
+ctxHistoryRoutes.route("/:txId").get(commitmentTxHistoryController.get).post(commitmentTxHistoryController.post);
 
-export default cmtxRoutes;
+export default ctxHistoryRoutes;
