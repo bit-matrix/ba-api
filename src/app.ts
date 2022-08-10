@@ -8,7 +8,7 @@ import chartRoutes from "./routes/chartRoutes";
 import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
 
-const client = new Redis();
+const client = new Redis(REDIS_URL);
 
 enum TX_STATUS {
   PENDING,
@@ -45,7 +45,6 @@ const socketInstance = BitmatrixSocket.getInstance(server, client);
 client.monitor((err, monitor) => {
   monitor?.on("monitor", async (time, args) => {
     if (args[0] === "SETEX" || args[0] === "DEL") {
-      console.log("in", args[0]);
       const parsedValues = await fetchRedisAllData(client);
       socketInstance.io.sockets.emit("redis-values", parsedValues);
     }
