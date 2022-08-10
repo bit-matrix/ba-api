@@ -48,7 +48,7 @@ client.monitor((err, monitor) => {
       console.log("in", args[0]);
       const parsedValues = await fetchRedisAllData(client);
 
-      const socketInstance = BitmatrixSocket.getInstance(server, client);
+      const socketInstance = BitmatrixSocket.getInstance();
       socketInstance.currentSocket?.emit("redis-values", parsedValues);
     }
   });
