@@ -5,7 +5,7 @@ import Redis from "ioredis";
 import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
 import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 import chartRoutes from "./routes/chartRoutes";
-import cmtxRoutes from "./routes/commitmentTxHistoryRoutes";
+import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
 
 const client = new Redis(REDIS_URL);
@@ -38,7 +38,7 @@ app.get("/", async (req, res, next) => {
 });
 
 app.use("/chart", chartRoutes);
-app.use("/cmtx", cmtxRoutes);
+app.use("/ctxHistory", ctxHistoryRoutes);
 
 const socketInstance = BitmatrixSocket.getInstance(server, client);
 

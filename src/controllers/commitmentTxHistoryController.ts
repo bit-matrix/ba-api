@@ -18,10 +18,11 @@ export const commitmentTxHistoryController = {
   post: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const txId = req.params.txId;
-      const data = req.body;
+      const data = { ...req.body };
+      data.time = new Date().getTime();
 
       const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
-      const newHistory = await commitmentTxHistoryProvider.put(txId, data);
+      const newHistory = await commitmentTxHistoryProvider.post(txId, data);
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
       const bitmatrixSocket = BitmatrixSocket.getInstance();
