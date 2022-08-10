@@ -44,9 +44,12 @@ const socketInstance = BitmatrixSocket.getInstance(server, client);
 
 client.monitor((err, monitor) => {
   monitor?.on("monitor", async (time, args) => {
-    console.log("monitor", args);
+    console.log("monitor", args[0]);
     if (args[0] === "SETEX" || args[0] === "DEL") {
+      console.log("in", args[0]);
       const parsedValues = await fetchRedisAllData(client);
+
+      console.log("parsedValues", parsedValues);
 
       socketInstance.currentSocket?.emit("redis-values", parsedValues);
     }
