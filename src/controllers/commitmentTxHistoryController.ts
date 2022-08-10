@@ -26,7 +26,7 @@ export const commitmentTxHistoryController = {
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
       const bitmatrixSocket = BitmatrixSocket.getInstance();
-      bitmatrixSocket.currentSocket?.emit("ctxHistory", allCtxHistory);
+      bitmatrixSocket.io.sockets.emit("ctxHistory", allCtxHistory);
 
       return res.status(200).send(newHistory);
     } catch (error) {

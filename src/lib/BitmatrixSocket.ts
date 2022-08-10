@@ -1,6 +1,5 @@
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
 import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
 import { BmChartResult } from "@bitmatrix/models";
@@ -9,10 +8,8 @@ import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 
 export class BitmatrixSocket {
-  private io: Server;
   private static instance: BitmatrixSocket;
-
-  currentSocket?: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+  io: Server;
 
   constructor(server: HttpServer, redisClient: Redis) {
     this.io = new Server(server, {
@@ -77,8 +74,6 @@ export class BitmatrixSocket {
 
         socket.emit("checkTxStatusResponse", txStatuses);
       });
-
-      this.currentSocket = socket;
 
       socket.on("disconnect", () => {
         console.log("user disconnected");
