@@ -2,7 +2,7 @@ import { BmChartResult } from "@bitmatrix/models";
 import { NextFunction, Request, Response } from "express";
 import { updateChart } from "../business/updateChart";
 import { BitmatrixSocket } from "../lib/BitmatrixSocket";
-import { ChartProvider } from "../providers/ChartProvider";
+import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
 
 // export const chartController = {
@@ -20,7 +20,7 @@ import { calculateChartData } from "../utils";
 //     }
 //   },
 
-export const chartController = {
+export const poolTxHistoryController = {
   // get: async (req: Request, res: Response, next: NextFunction) => {
   //   try {
   //     const asset = req.params.asset;
@@ -46,8 +46,8 @@ export const chartController = {
 
       const bitmatrixSocket = BitmatrixSocket.getInstance();
 
-      const chartProvider = await ChartProvider.getProvider();
-      const chartData = await chartProvider.getMany();
+      const poolTxHistoryProvider = await PoolTxHistoryProvider.getProvider();
+      const chartData = await poolTxHistoryProvider.getMany();
 
       const calculatedPoolsData = chartData.map((data: BmChartResult) => {
         return calculateChartData(data.val, data.key);

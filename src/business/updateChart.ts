@@ -1,11 +1,11 @@
-import { BmChart } from "../model/BmChart";
-import { ChartProvider } from "../providers/ChartProvider";
+import { BmChart } from "@bitmatrix/models";
+import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 
 export const updateChart = async (asset: string, data: BmChart): Promise<BmChart[]> => {
-  const chartProvider = await ChartProvider.getProvider();
+  const poolTxHistoryProvider = await PoolTxHistoryProvider.getProvider();
   let exist: BmChart[] = [];
 
-  const databaseData = await chartProvider.get(asset);
+  const databaseData = await poolTxHistoryProvider.get(asset);
 
   if (databaseData && databaseData[0] !== null) exist = databaseData;
 
@@ -15,7 +15,7 @@ export const updateChart = async (asset: string, data: BmChart): Promise<BmChart
 
   result.sort((a, b) => a.time - b.time);
 
-  await chartProvider.put(asset, result);
+  await poolTxHistoryProvider.put(asset, result);
 
   return result;
 };

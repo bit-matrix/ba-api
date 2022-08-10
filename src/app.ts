@@ -1,12 +1,11 @@
 import http from "http";
 import express from "express";
 import cors from "cors";
-import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
-import chartRoutes from "./routes/chartRoutes";
 import Redis from "ioredis";
+import { DATA_DIR, LISTEN_PORT, REDIS_URL } from "./env";
 import { BitmatrixSocket } from "./lib/BitmatrixSocket";
-import { BitmatrixStoreData, BmChart, BmChartResult } from "@bitmatrix/models";
-import { ChartProvider } from "./providers/ChartProvider";
+import chartRoutes from "./routes/chartRoutes";
+import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
 
 const client = new Redis(REDIS_URL);
@@ -39,12 +38,13 @@ app.get("/", async (req, res, next) => {
 });
 
 app.use("/chart", chartRoutes);
+app.use("/ctxHistory", ctxHistoryRoutes);
 
 const socketInstance = BitmatrixSocket.getInstance(server, client);
 
 client.monitor((err, monitor) => {
   monitor?.on("monitor", async (time, args) => {
-    if (args[0] === "set" || args[0] === "del" || args[0] === "put") {
+    if (args[0] === "set" || args[0] === "SETEX" || args[0] === "DEL" || args[0] === "PUT") {
       const parsedValues = await fetchRedisAllData(client);
 
       socketInstance.currentSocket?.emit("redis-values", parsedValues);
