@@ -32,7 +32,7 @@ export class CommitmentTxHistoryProvider {
 
   get = async (key: string): Promise<CommitmentTxHistory | undefined> => CommitmentTxHistoryProvider._dbProvider.get<CommitmentTxHistory>(key);
 
-  put = async (key: string, value: CommitmentTxHistory): Promise<CommitmentTxHistory> => CommitmentTxHistoryProvider._dbProvider.put<CommitmentTxHistory>(key, value);
+  post = async (key: string, value: CommitmentTxHistory): Promise<CommitmentTxHistory> => CommitmentTxHistoryProvider._dbProvider.put<CommitmentTxHistory>(key, value);
 
   getMany = async (): Promise<{ key: string; val: CommitmentTxHistory[] }[]> => CommitmentTxHistoryProvider._dbProvider.getMany<CommitmentTxHistory[]>();
 }
