@@ -8,7 +8,7 @@ import chartRoutes from "./routes/chartRoutes";
 import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
 
-const client = new Redis(REDIS_URL);
+const client = new Redis();
 
 enum TX_STATUS {
   PENDING,
