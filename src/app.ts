@@ -40,16 +40,14 @@ app.get("/", async (req, res, next) => {
 app.use("/chart", chartRoutes);
 app.use("/ctxHistory", ctxHistoryRoutes);
 
-BitmatrixSocket.getInstance(server, client);
+const socketInstance = BitmatrixSocket.getInstance(server, client);
 
 client.monitor((err, monitor) => {
   monitor?.on("monitor", async (time, args) => {
     if (args[0] === "SETEX" || args[0] === "DEL") {
       console.log("in", args[0]);
       const parsedValues = await fetchRedisAllData(client);
-
-      const socketInstance = BitmatrixSocket.getInstance();
-      socketInstance.currentSocket?.emit("redis-values", parsedValues);
+      socketInstance.io.sockets.emit("redis-values", parsedValues);
     }
   });
 });
