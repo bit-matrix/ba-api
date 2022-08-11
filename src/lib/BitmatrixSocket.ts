@@ -65,13 +65,9 @@ export class BitmatrixSocket {
           const txIdsArr: string[] = txIds.split(",");
           const willUpdatedSocketIndex = this.trackingList.findIndex((item) => item.socketId === socket.id);
 
-          console.log("1", txIdsArr);
-
           const txStatus = await checkTxStatus(txIdsArr, client);
 
           const txStatusResults = await Promise.all(txStatus);
-
-          console.log("2", txStatusResults);
 
           socket.emit("checkTxStatusResponse", txStatusResults);
 
