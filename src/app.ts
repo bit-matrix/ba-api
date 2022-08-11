@@ -10,14 +10,6 @@ import { fetchRedisAllData } from "./utils/redis";
 
 const client = new Redis(REDIS_URL);
 
-enum TX_STATUS {
-  PENDING,
-  WAITING_PTX,
-  WAITING_PTX_CONFIRM,
-  SUCCESS,
-  FAILED,
-}
-
 const onExit = async () => {
   console.log("BA API Service stopped.");
 };
@@ -50,41 +42,6 @@ client.monitor((err, monitor) => {
     }
   });
 });
-
-// io.currentSocket?.on("checkTxStatus", async (txIds) => {
-//   const txIdsArr: string[] = txIds.split(",");
-//   // const chartProvider = await ChartProvider.getProvider();
-
-//   console.log("txIdsArr", txIdsArr);
-
-//   const result = txIdsArr.map(async (tia) => {
-//     const redisData = parsedValues.find((val) => val.commitmentData.transaction.txid === tia);
-
-//     if (redisData) {
-//       if (redisData.poolTxInfo) {
-//         console.log("case1 : ", tia);
-//         return { txId: tia, poolTxId: redisData.poolTxInfo?.txId, status: TX_STATUS.WAITING_PTX_CONFIRM };
-//       }
-//       console.log("case2: ", tia);
-//       return { txId: tia, poolTxId: "", status: TX_STATUS.WAITING_PTX };
-//     }
-
-//     // const allPoolHistory: BmChartResult[] | undefined = await chartProvider.getMany();
-
-//     // if (allPoolHistory) {
-//     //   const isExist = allPoolHistory.findIndex((poolHistory) => poolHistory.ptxid === fd.poolTxInfo?.txId);
-
-//     //   if (isExist) {
-//     //     const status = fd.poolTxInfo?.isSuccess ? TX_STATUS.SUCCESS : TX_STATUS.FAILED;
-//     //     return { txId: fd.commitmentData.transaction.txid, poolTxId: fd.poolTxInfo?.txId, status };
-//     //   }
-//     // }
-//     console.log("case3: ", tia);
-//     return { txId: tia, poolTxId: "", status: TX_STATUS.PENDING };
-//   });
-
-//   io.currentSocket?.emit("checkTxStatusResponse", result);
-// });
 
 server.listen(LISTEN_PORT, () => {
   console.log("BA API Service is using DATA_DIR:" + DATA_DIR);

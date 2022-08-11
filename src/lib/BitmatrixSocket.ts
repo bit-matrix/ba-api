@@ -6,10 +6,17 @@ import { BmChartResult } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
 import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
+import { checkTxStatus } from "../utils/tracking";
+
+type FollowUp = {
+  socketId: string;
+  txIds: string[];
+};
 
 export class BitmatrixSocket {
   private static instance: BitmatrixSocket;
   io: Server;
+  trackingList: FollowUp[] = [];
 
   constructor(server: HttpServer, redisClient: Redis) {
     this.io = new Server(server, {
@@ -33,6 +40,7 @@ export class BitmatrixSocket {
   private connect = (client: Redis) => {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
+      this.trackingList.push({ socketId: socket.id, txIds: [] });
 
       const poolTxHistoryProvider = await PoolTxHistoryProvider.getProvider();
       const chartData = await poolTxHistoryProvider.getMany();
@@ -52,31 +60,28 @@ export class BitmatrixSocket {
 
       socket.emit("ctxHistory", allCtxHistory);
 
-      socket.on("checkTxStatus", (txIds) => {
-        const txIdsArr = txIds.split(",");
+      socket.on("checkTxStatus", async (txIds) => {
+        if (txIds !== "") {
+          const txIdsArr: string[] = txIds.split(",");
+          const willUpdatedSocketIndex = this.trackingList.findIndex((item) => item.socketId === socket.id);
 
-        enum TX_STATUS {
-          PENDING,
-          WAITING_PTX,
-          WAITING_PTX_CONFIRM,
-          SUCCESS,
-          FAILED,
+          console.log("1", txIdsArr);
+
+          const txStatus = await checkTxStatus(txIdsArr, client);
+
+          const txStatusResults = await Promise.all(txStatus);
+
+          console.log("2", txStatusResults);
+
+          socket.emit("checkTxStatusResponse", txStatusResults);
+
+          this.trackingList[willUpdatedSocketIndex].txIds = txIdsArr;
         }
-
-        const txStatuses = txIdsArr.map((tx: any) => {
-          return {
-            txId: tx,
-            poolTxId: "",
-            status: TX_STATUS.PENDING,
-            timestamp: Math.floor(Date.now() / 1000),
-          };
-        });
-
-        socket.emit("checkTxStatusResponse", txStatuses);
       });
 
       socket.on("disconnect", () => {
         console.log("user disconnected");
+        this.trackingList = this.trackingList.filter((item) => item.socketId !== socket.id);
       });
     });
   };
