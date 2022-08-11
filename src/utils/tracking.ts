@@ -1,14 +1,7 @@
 import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 import { fetchRedisAllData } from "./redis";
-
-enum TX_STATUS {
-  PENDING,
-  WAITING_PTX,
-  WAITING_PTX_CONFIRM,
-  SUCCESS,
-  FAILED,
-}
+import { TX_STATUS } from "@bitmatrix/models";
 
 export const checkTxStatus = async (txIdsArr: string[], client: Redis) => {
   const parsedValues = await fetchRedisAllData(client);
@@ -33,7 +26,7 @@ export const checkTxStatus = async (txIdsArr: string[], client: Redis) => {
         return { txId: tia, poolTxId: ctxHistory.txId, status: TX_STATUS.SUCCESS };
       }
 
-      return { txId: tia, poolTxId: ctxHistory.txId, status: TX_STATUS.FAILED, errorMessages: ctxHistory.failReasons ? ctxHistory.failReasons.join(",") : [] };
+      return { txId: tia, poolTxId: ctxHistory.txId, status: TX_STATUS.FAILED, errorMessages: ctxHistory.failReasons };
     }
 
     return { txId: tia, poolTxId: "", status: TX_STATUS.PENDING };

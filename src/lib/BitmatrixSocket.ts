@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
-import { BmChartResult } from "@bitmatrix/models";
+import { BmChartResult, TxStatus } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
 import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
@@ -67,7 +67,7 @@ export class BitmatrixSocket {
 
           const txStatus = await checkTxStatus(txIdsArr, client);
 
-          const txStatusResults = await Promise.all(txStatus);
+          const txStatusResults: TxStatus[] = await Promise.all(txStatus);
 
           socket.emit("checkTxStatusResponse", txStatusResults);
 
