@@ -41,17 +41,29 @@ client.monitor((err, monitor) => {
     if (args[0] === "SETEX" || args[0] === "DEL") {
       const parsedValues = await fetchRedisAllData(client);
       socketInstance.io.sockets.emit("redis-values", parsedValues);
+
       const wantedTxId = args[1];
-      socketInstance.trackingList.forEach(async (followUp) => {
+      const waitingList = socketInstance.getWaitinglist();
+
+      console.log("waitingList", waitingList);
+      console.log("wantedTxId", wantedTxId);
+
+      waitingList.forEach(async (followUp) => {
         const index = followUp.txIds.findIndex((txId) => txId === wantedTxId);
+
+        console.log("index", index);
+
         if (index > -1) {
           console.log(followUp.socketId, "------Socket Id******");
           const emitSocketId = followUp.socketId;
 
-          const txStatus = await checkTxStatus([wantedTxId], client);
+          const txStatus = await checkTxStatus(followUp.txIds, client);
+
+          console.log("txStatus:", txStatus);
 
           const txStatusResults: TxStatus[] = await Promise.all(txStatus);
-          console.log("txStatusResults", txStatusResults);
+
+          console.log("txStatusResultsnew", txStatusResults);
 
           socketInstance.io.to(emitSocketId).emit("checkTxStatusResponse", txStatusResults);
         }
