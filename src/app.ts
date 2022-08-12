@@ -7,6 +7,8 @@ import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 import chartRoutes from "./routes/chartRoutes";
 import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
+import { checkTxStatus } from "./utils/tracking";
+import { TxStatus } from "@bitmatrix/models";
 
 const client = new Redis(REDIS_URL);
 
@@ -39,6 +41,21 @@ client.monitor((err, monitor) => {
     if (args[0] === "SETEX" || args[0] === "DEL") {
       const parsedValues = await fetchRedisAllData(client);
       socketInstance.io.sockets.emit("redis-values", parsedValues);
+      const wantedTxId = args[1];
+      socketInstance.trackingList.forEach(async (followUp) => {
+        const index = followUp.txIds.findIndex((txId) => txId === wantedTxId);
+        if (index > -1) {
+          console.log(followUp.socketId, "------Socket Id******");
+          const emitSocketId = followUp.socketId;
+
+          const txStatus = await checkTxStatus([wantedTxId], client);
+
+          const txStatusResults: TxStatus[] = await Promise.all(txStatus);
+          console.log("txStatusResults", txStatusResults);
+
+          socketInstance.io.to(emitSocketId).emit("checkTxStatusResponse", txStatusResults);
+        }
+      });
     }
   });
 });
