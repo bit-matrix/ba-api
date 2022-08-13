@@ -93,7 +93,10 @@ export class BitmatrixSocket {
     const currentSocketIndex = clonedList.findIndex((item) => item.socketId === socketId);
 
     if (currentSocketIndex > -1) {
-      clonedList[currentSocketIndex].txIds = [...clonedList[currentSocketIndex].txIds, ...txIds];
+      const prevArray = clonedList[currentSocketIndex].txIds;
+      const nextArray = txIds.filter((tx) => prevArray.indexOf(tx) == -1);
+
+      clonedList[currentSocketIndex].txIds = [...clonedList[currentSocketIndex].txIds, ...nextArray];
     } else {
       clonedList.push({ socketId, txIds });
     }
