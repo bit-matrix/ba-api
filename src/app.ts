@@ -45,25 +45,15 @@ client.monitor((err, monitor) => {
       const wantedTxId = args[1];
       const waitingList = socketInstance.getWaitinglist();
 
-      console.log("waitingList", waitingList);
-      console.log("wantedTxId", wantedTxId);
-
       waitingList.forEach(async (followUp) => {
         const index = followUp.txIds.findIndex((txId) => txId === wantedTxId);
 
-        console.log("index", index);
-
         if (index > -1) {
-          console.log(followUp.socketId, "------Socket Id******");
           const emitSocketId = followUp.socketId;
 
           const txStatus = await checkTxStatus(followUp.txIds, client);
 
-          console.log("txStatus:", txStatus);
-
           const txStatusResults: TxStatus[] = await Promise.all(txStatus);
-
-          console.log("txStatusResultsnew", txStatusResults);
 
           socketInstance.io.to(emitSocketId).emit("checkTxStatusResponse", txStatusResults);
         }
