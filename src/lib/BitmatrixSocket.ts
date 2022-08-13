@@ -1,14 +1,21 @@
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { Server as HttpServer } from "http";
 import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
-import { BmChartResult } from "@bitmatrix/models";
+import { BmChartResult, TxStatus } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
 import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
+import { checkTxStatus } from "../utils/tracking";
+
+type FollowUp = {
+  socketId: string;
+  txIds: string[];
+};
 
 export class BitmatrixSocket {
   private static instance: BitmatrixSocket;
+  private trackingList: FollowUp[] = [];
   io: Server;
 
   constructor(server: HttpServer, redisClient: Redis) {
@@ -34,6 +41,8 @@ export class BitmatrixSocket {
     this.io.on("connection", async (socket) => {
       console.log("a user connected");
 
+      this.setWaitingList(socket.id, []);
+
       const poolTxHistoryProvider = await PoolTxHistoryProvider.getProvider();
       const chartData = await poolTxHistoryProvider.getMany();
 
@@ -52,32 +61,74 @@ export class BitmatrixSocket {
 
       socket.emit("ctxHistory", allCtxHistory);
 
-      socket.on("checkTxStatus", (txIds) => {
-        const txIdsArr = txIds.split(",");
+      socket.on("checkTxStatus", async (txIds) => {
+        const txIdsArr: string[] = txIds.split(",");
 
-        enum TX_STATUS {
-          PENDING,
-          WAITING_PTX,
-          WAITING_PTX_CONFIRM,
-          SUCCESS,
-          FAILED,
+        this.setWaitingList(socket.id, txIdsArr);
+
+        if (txIdsArr.length === 0) {
+          socket.emit("checkTxStatusResponse", []);
+        } else {
+          const txStatus = await checkTxStatus(txIdsArr, client);
+
+          const txStatusResults: TxStatus[] = await Promise.all(txStatus);
+
+          socket.emit("checkTxStatusResponse", txStatusResults);
         }
-
-        const txStatuses = txIdsArr.map((tx: any) => {
-          return {
-            txId: tx,
-            poolTxId: "",
-            status: TX_STATUS.PENDING,
-            timestamp: Math.floor(Date.now() / 1000),
-          };
-        });
-
-        socket.emit("checkTxStatusResponse", txStatuses);
       });
 
       socket.on("disconnect", () => {
         console.log("user disconnected");
+        this.removeWaitingSocket(socket.id);
       });
     });
   };
+
+  getWaitinglist = () => {
+    return this.trackingList;
+  };
+
+  setWaitingList = (socketId: string, txIds: string[]) => {
+    const clonedList = [...this.trackingList];
+    const currentSocketIndex = clonedList.findIndex((item) => item.socketId === socketId);
+
+    if (currentSocketIndex > -1) {
+      const prevArray = clonedList[currentSocketIndex].txIds;
+      const nextArray = txIds.filter((tx) => prevArray.indexOf(tx) == -1);
+
+      clonedList[currentSocketIndex].txIds = [...clonedList[currentSocketIndex].txIds, ...nextArray];
+    } else {
+      clonedList.push({ socketId, txIds });
+    }
+
+    this.trackingList = clonedList;
+  };
+
+  removeWaitingSocket = (socketId: string) => {
+    const clonedList = [...this.trackingList];
+
+    const currentSocketIndex = clonedList.findIndex((item) => item.socketId === socketId);
+
+    clonedList.splice(currentSocketIndex, 1);
+
+    this.trackingList = clonedList;
+  };
+
+  // removeWaitingTxId = (socketId: string, txId: string) => {
+  //   const clonedList = [...this.trackingList];
+
+  //   const currentSocket = clonedList.find((item) => item.socketId === socketId);
+
+  //   if (currentSocket) {
+  //     const currentTxIdIndex = currentSocket.txIds.findIndex((item) => item === txId);
+
+  //     if (currentTxIdIndex === 0) {
+  //       this.removeWaitingSocket(currentSocket.socketId);
+  //     } else {
+  //       currentSocket.txIds.splice(currentTxIdIndex, 1);
+  //     }
+  //   }
+
+  //   this.trackingList = clonedList;
+  // };
 }
