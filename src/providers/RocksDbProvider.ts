@@ -51,11 +51,11 @@ export class RocksDbProvider {
       const result: { key: string; val: T }[] = [];
 
       try {
-        const it: rocksdb.Iterator = this.db.iterator({ reverse });
+        const it: rocksdb.Iterator = this.db.iterator({ reverse, keyAsBuffer: false, valueAsBuffer: false });
 
         let i = 0;
         const next = () => {
-          it.next((err: Error | undefined, key: rocksdb.Bytes, val: rocksdb.Bytes) => {
+          it.next((err: Error | undefined, key: any, val: any) => {
             if (err) {
               if (err.message === "NotFound: ") return resolve([]);
               console.error("RocksDbProvider.getMany.iterator.next.error", err);
@@ -67,8 +67,8 @@ export class RocksDbProvider {
             } else {
               // console.log("r: " + key.toString());
               result.push({
-                key: key.toString("utf8"),
-                val: <T>JSON.parse(val.toString("utf8")),
+                key,
+                val: <T>JSON.parse(val),
               });
               next();
             }
