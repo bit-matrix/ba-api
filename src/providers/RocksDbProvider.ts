@@ -9,7 +9,7 @@ export class RocksDbProvider {
 
   get = async <T>(key: string): Promise<T | undefined> => {
     return new Promise<T | undefined>((resolve, reject) => {
-      this.db.get(key, { sync: true }, (err: Error | undefined, val: rocksdb.Bytes) => {
+      this.db.get(key, (err: Error | undefined, val: rocksdb.Bytes) => {
         if (err) {
           if (err.message === "NotFound: ") return resolve(undefined);
           console.error("RocksDbProvider.get.error", err.message, err.message === "NotFound: ");
