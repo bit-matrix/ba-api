@@ -7,7 +7,7 @@ import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 import chartRoutes from "./routes/chartRoutes";
 import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
-import { checkTxStatusWithoutHistory } from "./utils/tracking";
+import { checkTxStatus, checkTxStatusWithoutHistory } from "./utils/tracking";
 import { TxStatus } from "@bitmatrix/models";
 
 const client = new Redis(REDIS_URL);
@@ -42,17 +42,16 @@ client.monitor((err, monitor) => {
       const parsedValues = await fetchRedisAllData(client);
       socketInstance.io.sockets.emit("redis-values", parsedValues);
 
-      const wantedTxId = args[1];
-      const waitingList = socketInstance.getWaitinglist();
-
       if (args[0] === "SETEX") {
+        const wantedTxId = args[1];
+        const waitingList = socketInstance.getWaitinglist();
         waitingList.forEach(async (followUp) => {
           const index = followUp.txIds.findIndex((txId) => txId === wantedTxId);
 
           if (index > -1) {
             const emitSocketId = followUp.socketId;
 
-            const txStatus = await checkTxStatusWithoutHistory(followUp.txIds, client);
+            const txStatus = await checkTxStatus(followUp.txIds, client);
 
             const txStatusResults: TxStatus[] = await Promise.all(txStatus);
 

@@ -2,7 +2,7 @@ import { TxStatus } from "@bitmatrix/models";
 import { NextFunction, Request, Response } from "express";
 import { BitmatrixSocket } from "../lib/BitmatrixSocket";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
-import { checkTxStatusOnlyHistory } from "../utils/tracking";
+import { checkTxStatus, checkTxStatusOnlyHistory } from "../utils/tracking";
 
 export const commitmentTxHistoryController = {
   get: async (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +36,7 @@ export const commitmentTxHistoryController = {
         if (index > -1) {
           const emitSocketId = followUp.socketId;
 
-          const txStatus = await checkTxStatusOnlyHistory(followUp.txIds, commitmentTxHistoryProvider);
+          const txStatus = await checkTxStatus(followUp.txIds, bitmatrixSocket.redis, commitmentTxHistoryProvider);
 
           const txStatusResults: TxStatus[] = await Promise.all(txStatus);
 

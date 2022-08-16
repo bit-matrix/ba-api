@@ -1,11 +1,11 @@
 import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 import { fetchRedisAllData } from "./redis";
-import { CommitmentTxHistory, TX_STATUS } from "@bitmatrix/models";
+import { TX_STATUS } from "@bitmatrix/models";
 
-export const checkTxStatus = async (txIdsArr: string[], client: Redis) => {
+export const checkTxStatus = async (txIdsArr: string[], client: Redis, provider?: CommitmentTxHistoryProvider) => {
   const parsedValues = await fetchRedisAllData(client);
-  const ctxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
+  const ctxHistoryProvider = provider || (await CommitmentTxHistoryProvider.getProvider());
 
   return txIdsArr.map(async (tia) => {
     const redisData = parsedValues.find((val) => val.commitmentData.transaction.txid === tia);
