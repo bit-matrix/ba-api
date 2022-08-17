@@ -17,6 +17,7 @@ export class BitmatrixSocket {
   private static instance: BitmatrixSocket;
   private trackingList: FollowUp[] = [];
   io: Server;
+  redis: Redis;
 
   constructor(server: HttpServer, redisClient: Redis) {
     this.io = new Server(server, {
@@ -27,6 +28,7 @@ export class BitmatrixSocket {
     });
 
     this.connect(redisClient);
+    this.redis = redisClient;
   }
 
   public static getInstance(server?: HttpServer, redisClient?: Redis): BitmatrixSocket {
@@ -93,14 +95,12 @@ export class BitmatrixSocket {
     const currentSocketIndex = clonedList.findIndex((item) => item.socketId === socketId);
 
     if (currentSocketIndex > -1) {
-      const prevArray = clonedList[currentSocketIndex].txIds;
-      const nextArray = txIds.filter((tx) => prevArray.indexOf(tx) == -1);
-
-      clonedList[currentSocketIndex].txIds = [...clonedList[currentSocketIndex].txIds, ...nextArray];
+      clonedList[currentSocketIndex].txIds = txIds;
     } else {
       clonedList.push({ socketId, txIds });
     }
 
+    console.log("clonedList", clonedList);
     this.trackingList = clonedList;
   };
 

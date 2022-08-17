@@ -9,7 +9,7 @@ export class RocksDbProvider {
 
   get = async <T>(key: string): Promise<T | undefined> => {
     return new Promise<T | undefined>((resolve, reject) => {
-      this.db.get(key, { sync: true }, (err: Error | undefined, val: rocksdb.Bytes) => {
+      this.db.get(key, (err: Error | undefined, val: rocksdb.Bytes) => {
         if (err) {
           if (err.message === "NotFound: ") return resolve(undefined);
           console.error("RocksDbProvider.get.error", err.message, err.message === "NotFound: ");
@@ -46,16 +46,16 @@ export class RocksDbProvider {
     });
   };
 
-  getMany = async <T>(): Promise<{ key: string; val: T }[]> => {
+  getMany = async <T>(reverse?: boolean): Promise<{ key: string; val: T }[]> => {
     return new Promise<{ key: string; val: T }[]>(async (resolve, reject) => {
       const result: { key: string; val: T }[] = [];
 
       try {
-        const it: rocksdb.Iterator = this.db.iterator();
+        const it: rocksdb.Iterator = this.db.iterator({ reverse, keyAsBuffer: false, valueAsBuffer: false });
 
         let i = 0;
         const next = () => {
-          it.next((err: Error | undefined, key: rocksdb.Bytes, val: rocksdb.Bytes) => {
+          it.next((err: Error | undefined, key: any, val: any) => {
             if (err) {
               if (err.message === "NotFound: ") return resolve([]);
               console.error("RocksDbProvider.getMany.iterator.next.error", err);
@@ -67,8 +67,8 @@ export class RocksDbProvider {
             } else {
               // console.log("r: " + key.toString());
               result.push({
-                key: key.toString("utf8"),
-                val: <T>JSON.parse(val.toString("utf8")),
+                key,
+                val: <T>JSON.parse(val),
               });
               next();
             }
