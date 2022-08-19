@@ -1,8 +1,9 @@
 import { TxStatus } from "@bitmatrix/models";
 import { NextFunction, Request, Response } from "express";
+import { sortCommitmentHistoryTxs } from "../business/sortCommitmentHistoryTxs";
 import { BitmatrixSocket } from "../lib/BitmatrixSocket";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
-import { checkTxStatus, checkTxStatusOnlyHistory } from "../utils/tracking";
+import { checkTxStatus } from "../utils/tracking";
 
 export const commitmentTxHistoryController = {
   get: async (req: Request, res: Response, next: NextFunction) => {
@@ -21,14 +22,16 @@ export const commitmentTxHistoryController = {
     try {
       const txId = req.params.txId;
       const data = { ...req.body };
-      data.time = new Date().getTime();
+      data.timestamp = new Date().getTime();
 
       const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
       const newHistory = await commitmentTxHistoryProvider.post(txId, data);
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
+      const sortedAllCtxHistory = await sortCommitmentHistoryTxs(allCtxHistory);
+
       const bitmatrixSocket = BitmatrixSocket.getInstance();
-      bitmatrixSocket.io.sockets.emit("ctxHistory", allCtxHistory);
+      bitmatrixSocket.io.sockets.emit("ctxHistory", sortedAllCtxHistory);
 
       bitmatrixSocket.getWaitinglist().forEach(async (followUp) => {
         const index = followUp.txIds.findIndex((txid) => txid === txId);

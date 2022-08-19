@@ -1,12 +1,13 @@
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
+import Redis from "ioredis";
+import { BmChartResult, TxStatus } from "@bitmatrix/models";
 import { PoolTxHistoryProvider } from "../providers/PoolTxHistoryProvider";
 import { calculateChartData } from "../utils";
-import { BmChartResult, TxStatus } from "@bitmatrix/models";
 import { fetchRedisAllData } from "../utils/redis";
-import Redis from "ioredis";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 import { checkTxStatus } from "../utils/tracking";
+import { sortCommitmentHistoryTxs } from "../business/sortCommitmentHistoryTxs";
 
 type FollowUp = {
   socketId: string;
@@ -61,7 +62,9 @@ export class BitmatrixSocket {
       const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
-      socket.emit("ctxHistory", allCtxHistory);
+      const sortedAllCtxHistory = await sortCommitmentHistoryTxs(allCtxHistory);
+
+      socket.emit("ctxHistory", sortedAllCtxHistory);
 
       socket.on("checkTxStatus", async (txIds) => {
         const txIdsArr: string[] = txIds.split(",");

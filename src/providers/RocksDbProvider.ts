@@ -46,12 +46,12 @@ export class RocksDbProvider {
     });
   };
 
-  getMany = async <T>(reverse?: boolean): Promise<{ key: string; val: T }[]> => {
+  getMany = async <T>(): Promise<{ key: string; val: T }[]> => {
     return new Promise<{ key: string; val: T }[]>(async (resolve, reject) => {
       const result: { key: string; val: T }[] = [];
 
       try {
-        const it: rocksdb.Iterator = this.db.iterator({ reverse, keyAsBuffer: false, valueAsBuffer: false });
+        const it: rocksdb.Iterator = this.db.iterator({ keyAsBuffer: false, valueAsBuffer: false });
 
         let i = 0;
         const next = () => {
