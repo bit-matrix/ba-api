@@ -34,5 +34,5 @@ export class CommitmentTxHistoryProvider {
 
   post = async (key: string, value: CommitmentTxHistory): Promise<CommitmentTxHistory> => CommitmentTxHistoryProvider._dbProvider.put<CommitmentTxHistory>(key, value);
 
-  getMany = async (): Promise<{ key: string; val: CommitmentTxHistory[] }[]> => CommitmentTxHistoryProvider._dbProvider.getMany<CommitmentTxHistory[]>(true);
+  getMany = async (): Promise<{ key: string; val: CommitmentTxHistory }[]> => CommitmentTxHistoryProvider._dbProvider.getMany<CommitmentTxHistory>();
 }
