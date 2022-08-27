@@ -1,6 +1,6 @@
 # Install
 
-mkdir /var/lib/docker/volumes/HistoryDataVolumeBmx/\_data/new-pool-chart
+mkdir /var/lib/docker/volumes/HistoryDataVolumeMulti/\_data/new-pool-chart
 
 mkdir /root/github/bit-matrix/new-pool
 cd /root/github/bit-matrix/new-pool
@@ -10,14 +10,14 @@ git checkout -b new-pool
 git branch --set-upstream-to=origin/new-pool new-pool
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v HistoryDataVolumeBmx:/historydatavolumebmx ba-api-new
+docker run -d -p 9901:9901 -v HistoryDataVolumeMulti:/historydatavolumemulti ba-api-new
 
 # Update
 
 cd /root/github/bit-matrix/new-pool/ba-api
 git pull
 docker build -t ba-api-new .
-docker run -d -p 9901:9901 -v Historydatavolume:/historydatavolumebmx --network="host" ba-api-new
+docker run -d -p 9901:9901 -v Historydatavolume:/historydatavolumemulti --network="host" ba-api-new
 
 ## List db files
 

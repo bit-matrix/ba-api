@@ -1,4 +1,4 @@
-export const DATA_DIR: string = process.env.DATA_DIR || "/historydatavolumebmx/";
+export const DATA_DIR: string = process.env.DATA_DIR || "/historydatavolumemulti/";
 export const LISTEN_PORT: number = Number(process.env.PORT || 9901);
 export const REDIS_URL = "host.docker.internal:6379";
 
