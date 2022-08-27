@@ -8,14 +8,14 @@ git clone https://github.com/bit-matrix/ba-api.git
 cd ba-api
 git checkout v2
 docker build -t ba-api-v2 .
-docker run -d -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumev2 ba-api-v2
+docker run -d -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumemultiv2 ba-api-v2
 
 # Update
 
 cd /root/github/bit-matrix/new-pool/ba-api
 git pull
 docker build -t ba-api-v2 .
-docker run -d -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumev2 ba-api-v2
+docker run -d -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumemultiv2 ba-api-v2
 
 ## List db files
 
@@ -27,15 +27,15 @@ docker build -t ba-api-v2 .
 
 ## run
 
-docker run -d -v HistoryDataVolumeMultiV2:/historydatavolumev2 --network="host" ba-api-v2
+docker run -d -v HistoryDataVolumeMultiV2:/historydatavolumemultiv2 --network="host" ba-api-v2
 
 ## run interactive
 
-docker run -it -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumev2 ba-api-v2
+docker run -it -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumemultiv2 ba-api-v2
 
 ## run interactive, remove when stop
 
-docker run -it --rm -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumev2/new-pool ba-api-v2-new
+docker run -it --rm -p 9902:9902 -v HistoryDataVolumeMultiV2:/historydatavolumemultiv2/new-pool ba-api-v2-new
 
 ## image list
 
