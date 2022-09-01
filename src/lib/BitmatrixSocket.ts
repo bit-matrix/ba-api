@@ -103,7 +103,6 @@ export class BitmatrixSocket {
       clonedList.push({ socketId, txIds });
     }
 
-    console.log("clonedList", clonedList);
     this.trackingList = clonedList;
   };
 
@@ -116,22 +115,4 @@ export class BitmatrixSocket {
 
     this.trackingList = clonedList;
   };
-
-  // removeWaitingTxId = (socketId: string, txId: string) => {
-  //   const clonedList = [...this.trackingList];
-
-  //   const currentSocket = clonedList.find((item) => item.socketId === socketId);
-
-  //   if (currentSocket) {
-  //     const currentTxIdIndex = currentSocket.txIds.findIndex((item) => item === txId);
-
-  //     if (currentTxIdIndex === 0) {
-  //       this.removeWaitingSocket(currentSocket.socketId);
-  //     } else {
-  //       currentSocket.txIds.splice(currentTxIdIndex, 1);
-  //     }
-  //   }
-
-  //   this.trackingList = clonedList;
-  // };
 }
