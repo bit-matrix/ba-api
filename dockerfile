@@ -38,24 +38,28 @@ RUN cd /tmp && \
     rm -R /tmp/rocksdb/
 
 
-# create root application folder
-WORKDIR /ba-api
-RUN mkdir /ba-api/data-dir
+ARG API_INTERNAL_DATA_DIR
+ENV DATA_DIR $API_INTERNAL_DATA_DIR
 
-# copy configs to /ba-api folder
+# create root application folder
+WORKDIR /api
+RUN mkdir $DATA_DIR
+
+# copy configs to /api folder
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY babel.config.js ./
 
-# copy source code to /ba-api/src folder
+# copy source code to /api/src folder
 COPY src ./src
 
 # check files list
 RUN ls -a
-   
+
 RUN npm install
 RUN npm run build
 
 EXPOSE 9901
+STOPSIGNAL SIGINT
 
 CMD ["npm", "start"]
