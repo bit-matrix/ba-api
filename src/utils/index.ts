@@ -131,7 +131,7 @@ export const calculateChartData = (chartData: BmChart[], poolId: string): ChartS
   const todayVolumeData = allVolumeData[allVolumeData.length - 1];
   const todayFeeData = allFeesData[allFeesData.length - 1];
   const todayTvlData = (lastElement.value.token * 2) / unitValue;
-  const todayPrice = lastElement.value.token / lastElement.value.quote;
+  const todayPrice = lastElement.price;
 
   // previous data
   let previousVolumeData: ChartData = { date: "", close: 0 };
