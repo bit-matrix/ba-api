@@ -101,20 +101,17 @@ export const groupBydailyVolume = (chartData: BmChart[]): ChartData[] => {
 const chartDataDiff = (currentData: number, previousData: number) => {
   let currentValue = 0;
   let direction = "";
-  // let icon = <ArrowDownIcon fill="#f44336" />;
 
   if (currentData > previousData) {
     if (previousData !== 0) {
       currentValue = ((currentData - previousData) / previousData) * 100;
     }
     direction = "up";
-    // icon = <ArrowUpIcon fill="#4caf50" />;
   } else {
     if (currentData !== 0) {
       currentValue = ((currentData - previousData) / currentData) * 100;
     }
     direction = "down";
-    // icon = <ArrowDownIcon fill="#f44336" />;
   }
 
   return { value: Math.abs(currentValue).toFixed(2), direction };
@@ -124,7 +121,7 @@ export const calculateChartData = (chartData: BmChart[], poolId: string): ChartS
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(chartData);
   const allTvlData = groupByDailyTvl(chartData);
-  const allFeesData: ChartData[] = groupBydailyVolume(chartData).map((d) => ({ ...d, close: d.close / 500 }));
+  const allFeesData: ChartData[] = groupBydailyVolume(chartData).map((d) => ({ ...d, close: d.close / chartData[0].lpFeeTier }));
   const lastElement = chartData[chartData.length - 1];
 
   // live current time data
