@@ -22,7 +22,6 @@ export const commitmentTxHistoryController = {
     try {
       const txId = req.params.txId;
       const data = { ...req.body };
-      data.timestamp = new Date().getTime();
 
       const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
       const newHistory = await commitmentTxHistoryProvider.post(txId, data);
