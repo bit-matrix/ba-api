@@ -38,7 +38,7 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
   const res = chartData.map((d) => {
     const datetime = new Date(d.time * 1000);
     const date = datetime.getUTCFullYear() + "-" + (datetime.getUTCMonth() + 1).toString().padStart(2, "0") + "-" + datetime.getUTCDate().toString().padStart(2, "0");
-    return { close: Math.floor(d.value.token / unitValue), date };
+    return { close: Math.floor(d.value.quote / unitValue), date };
   });
 
   const result = [];
@@ -127,7 +127,7 @@ export const calculateChartData = (chartData: BmChart[], poolId: string): ChartS
   // live current time data
   const todayVolumeData = allVolumeData[allVolumeData.length - 1];
   const todayFeeData = allFeesData[allFeesData.length - 1];
-  const todayTvlData = (lastElement.value.token * 2) / unitValue;
+  const todayTvlData = (lastElement.value.quote * 2) / unitValue;
   const todayPrice = lastElement.price;
 
   // previous data
