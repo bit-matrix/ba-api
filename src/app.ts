@@ -7,7 +7,7 @@ import { BitmatrixSocket } from "./lib/BitmatrixSocket";
 import chartRoutes from "./routes/chartRoutes";
 import ctxHistoryRoutes from "./routes/commitmentTxHistoryRoutes";
 import { fetchRedisAllData } from "./utils/redis";
-import { checkTxStatus, checkTxStatusWithoutHistory } from "./utils/tracking";
+import { checkTxStatus } from "./utils/tracking";
 import { TxStatus } from "@bitmatrix/models";
 
 const client = new Redis(REDIS_URL);
