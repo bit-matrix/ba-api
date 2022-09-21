@@ -1,5 +1,6 @@
-import { BmChart, ChartSummary } from "@bitmatrix/models";
+import { BmChart, CALL_METHOD, ChartSummary, CommitmentTxHistory } from "@bitmatrix/models";
 import { ChartData } from "@bitmatrix/models";
+import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 
 const unitValue = 100000000;
 
@@ -67,13 +68,17 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
   return result;
 };
 
-export const groupBydailyVolume = (chartData: BmChart[]): ChartData[] => {
+export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => {
+  const chartData = data.filter((dt) => dt.method === CALL_METHOD.SWAP_QUOTE_FOR_TOKEN || dt.method === CALL_METHOD.SWAP_TOKEN_FOR_QUOTE);
+
+  console.log("chartData", chartData);
+
   if (chartData.length === 0) return [{ date: "", close: 0 }];
 
   const res = chartData.map((d) => {
-    const datetime = new Date(d.time * 1000);
+    const datetime = new Date(d.timestamp * 1000);
     const date = datetime.getUTCFullYear() + "-" + (datetime.getUTCMonth() + 1).toString().padStart(2, "0") + "-" + datetime.getUTCDate().toString().padStart(2, "0");
-    return { volume: Math.floor(d.volume.token / unitValue), date };
+    return { volume: Number(d.value), date };
   });
 
   const result = [];
@@ -117,11 +122,20 @@ const chartDataDiff = (currentData: number, previousData: number) => {
   return { value: Math.abs(currentValue).toFixed(2), direction };
 };
 
-export const calculateChartData = (chartData: BmChart[], poolId: string): ChartSummary => {
+export const calculateChartData = async (chartData: BmChart[], poolId: string): Promise<ChartSummary> => {
+  const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
+  const allCtxHistory: {
+    key: string;
+    val: CommitmentTxHistory;
+  }[] = await commitmentTxHistoryProvider.getMany();
+  const data: CommitmentTxHistory[] = allCtxHistory.map((ach) => ach.val);
+
+  const poolData = data.filter((dt) => dt.poolId === poolId);
+
   const allPriceData = groupBydailyPrice(chartData);
-  const allVolumeData = groupBydailyVolume(chartData);
+  const allVolumeData = groupBydailyVolume(poolData);
   const allTvlData = groupByDailyTvl(chartData);
-  const allFeesData: ChartData[] = groupBydailyVolume(chartData).map((d) => ({ ...d, close: d.close / chartData[0].lpFeeTier }));
+  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: d.close / chartData[0].lpFeeTier }));
   const lastElement = chartData[chartData.length - 1];
 
   // live current time data
