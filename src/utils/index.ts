@@ -71,8 +71,6 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
 export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => {
   const chartData = data.filter((dt) => dt.method === CALL_METHOD.SWAP_QUOTE_FOR_TOKEN || dt.method === CALL_METHOD.SWAP_TOKEN_FOR_QUOTE);
 
-  console.log("chartData", chartData);
-
   if (chartData.length === 0) return [{ date: "", close: 0 }];
 
   const res = chartData.map((d) => {
