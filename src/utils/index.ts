@@ -128,7 +128,7 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
   }[] = await commitmentTxHistoryProvider.getMany();
   const data: CommitmentTxHistory[] = allCtxHistory.map((ach) => ach.val);
 
-  const poolData = data.filter((dt) => dt.poolId === poolId);
+  const poolData = data.filter((dt) => dt.poolId === poolId && dt.isSuccess);
 
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(poolData);
