@@ -24,7 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@bitmatrix/models": "^0.1.47",
+    "@bitmatrix/models": "^0.1.48",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "ioredis": "^5.2.2",
