@@ -22,7 +22,9 @@ export const poolTxHistoryController = {
         return calculateChartData(data.val, data.key);
       });
 
-      bitmatrixSocket.io.sockets?.emit("poolschart", calculatedPoolsData);
+      const finalData = await Promise.all(calculatedPoolsData);
+
+      bitmatrixSocket.io.sockets?.emit("poolschart", finalData);
 
       return res.status(200).send(newChart);
     } catch (error) {

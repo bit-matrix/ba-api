@@ -53,7 +53,9 @@ export class BitmatrixSocket {
         return calculateChartData(data.val, data.key);
       });
 
-      socket.emit("poolschart", calculatedPoolsData);
+      const finalData = await Promise.all(calculatedPoolsData);
+
+      socket.emit("poolschart", finalData);
 
       const redisData = await fetchRedisAllData(client);
 
