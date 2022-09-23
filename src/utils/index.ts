@@ -24,12 +24,12 @@ export const groupBydailyPrice = (chartData: BmChart[]): any[] => {
     if (currentDate === r.date) {
       lastPrice = r.price;
     } else {
-      result.push({ date: res[i - 1].date, close: Math.floor(lastPrice) });
+      result.push({ date: res[i - 1].date, close: Number(lastPrice.toFixed(2)) });
       currentDate = r.date;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Math.floor(lastPrice) });
+  result.push({ date: res[res.length - 1].date, close: Number(lastPrice.toFixed(2)) });
   return result;
 };
 
@@ -55,7 +55,7 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
       cumclose += r.close;
       j++;
     } else {
-      result.push({ date: res[i - 1].date, close: Math.floor(cumclose / j) * 2 });
+      result.push({ date: res[i - 1].date, close: Number((cumclose / j).toFixed(2)) * 2 });
 
       currentDate = r.date;
       cumclose = r.close;
@@ -63,7 +63,7 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Math.floor(cumclose / j) * 2 });
+  result.push({ date: res[res.length - 1].date, close: Number((cumclose / j).toFixed(2)) * 2 });
 
   return result;
 };
@@ -90,14 +90,14 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
     if (currentDate === r.date) {
       totalVolume += r.volume;
     } else {
-      result.push({ date: res[i - 1].date, close: Math.floor(totalVolume) });
+      result.push({ date: res[i - 1].date, close: Number(totalVolume.toFixed(2)) });
 
       currentDate = r.date;
       totalVolume = r.volume;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Math.floor(totalVolume) });
+  result.push({ date: res[res.length - 1].date, close: Number(totalVolume.toFixed(2)) });
   return result;
 };
 
