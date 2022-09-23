@@ -83,21 +83,25 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
 
   let currentDate = res[0].date;
   let totalVolume = res[0].volume;
+  let j = 1;
 
   for (let i = 1; i < res.length; i++) {
     const r = res[i];
 
     if (currentDate === r.date) {
       totalVolume += r.volume;
+      j++;
     } else {
-      result.push({ date: res[i - 1].date, close: Number(totalVolume.toFixed(2)) });
+      result.push({ date: res[i - 1].date, close: Number((totalVolume / j).toFixed(2)) });
 
       currentDate = r.date;
       totalVolume = r.volume;
+      j = 1;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Number(totalVolume.toFixed(2)) });
+  result.push({ date: res[res.length - 1].date, close: Number((totalVolume / j).toFixed(2)) });
+
   return result;
 };
 
