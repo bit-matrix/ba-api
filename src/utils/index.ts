@@ -76,7 +76,7 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
   const res = chartData.map((d) => {
     const datetime = new Date(d.timestamp * 1000);
     const date = datetime.getUTCFullYear() + "-" + (datetime.getUTCMonth() + 1).toString().padStart(2, "0") + "-" + datetime.getUTCDate().toString().padStart(2, "0");
-    return { volume: Number(d.value), date };
+    return { volume: Number(d.value) / unitValue, date };
   });
 
   const result = [];
