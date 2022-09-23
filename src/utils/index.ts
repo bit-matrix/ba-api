@@ -76,7 +76,7 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
   const res = chartData.map((d) => {
     const datetime = new Date(d.timestamp * 1000);
     const date = datetime.getUTCFullYear() + "-" + (datetime.getUTCMonth() + 1).toString().padStart(2, "0") + "-" + datetime.getUTCDate().toString().padStart(2, "0");
-    return { volume: Number(d.value) / unitValue, date };
+    return { volume: Math.floor(Number(d.value) / unitValue), date };
   });
 
   const result = [];
@@ -90,14 +90,14 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
     if (currentDate === r.date) {
       totalVolume += r.volume;
     } else {
-      result.push({ date: res[i - 1].date, close: totalVolume });
+      result.push({ date: res[i - 1].date, close: Math.floor(totalVolume) });
 
       currentDate = r.date;
       totalVolume = r.volume;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: totalVolume });
+  result.push({ date: res[res.length - 1].date, close: Math.floor(totalVolume) });
   return result;
 };
 
