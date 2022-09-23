@@ -64,7 +64,7 @@ export class BitmatrixSocket {
       const commitmentTxHistoryProvider = await CommitmentTxHistoryProvider.getProvider();
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
-      const sortedAllCtxHistory = await sortCommitmentHistoryTxs(allCtxHistory);
+      const sortedAllCtxHistory = sortCommitmentHistoryTxs(allCtxHistory);
 
       socket.emit("ctxHistory", sortedAllCtxHistory);
 

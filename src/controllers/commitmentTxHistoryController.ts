@@ -27,7 +27,7 @@ export const commitmentTxHistoryController = {
       const newHistory = await commitmentTxHistoryProvider.post(txId, data);
       const allCtxHistory = await commitmentTxHistoryProvider.getMany();
 
-      const sortedAllCtxHistory = await sortCommitmentHistoryTxs(allCtxHistory);
+      const sortedAllCtxHistory = sortCommitmentHistoryTxs(allCtxHistory);
 
       const bitmatrixSocket = BitmatrixSocket.getInstance();
       bitmatrixSocket.io.sockets.emit("ctxHistory", sortedAllCtxHistory);

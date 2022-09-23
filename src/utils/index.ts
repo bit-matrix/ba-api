@@ -1,5 +1,6 @@
 import { BmChart, CALL_METHOD, ChartSummary, CommitmentTxHistory } from "@bitmatrix/models";
 import { ChartData } from "@bitmatrix/models";
+import { sortCommitmentHistoryTxs } from "../business/sortCommitmentHistoryTxs";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 
 const unitValue = 100000000;
@@ -98,6 +99,7 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
   }
 
   result.push({ date: res[res.length - 1].date, close: Number(totalVolume.toFixed(2)) });
+
   return result;
 };
 
@@ -126,14 +128,16 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
     key: string;
     val: CommitmentTxHistory;
   }[] = await commitmentTxHistoryProvider.getMany();
-  const data: CommitmentTxHistory[] = allCtxHistory.map((ach) => ach.val);
+  const sortedData = sortCommitmentHistoryTxs(allCtxHistory, true);
+
+  const data: CommitmentTxHistory[] = sortedData.map((ach) => ach.val);
 
   const poolData = data.filter((dt) => dt.poolId === poolId && dt.isSuccess);
 
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(poolData);
   const allTvlData = groupByDailyTvl(chartData);
-  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: d.close / chartData[0].lpFeeTier }));
+  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: Number((d.close / chartData[0].lpFeeTier).toFixed(2)) }));
   const lastElement = chartData[chartData.length - 1];
 
   // live current time data
