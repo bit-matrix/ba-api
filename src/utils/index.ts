@@ -25,12 +25,12 @@ export const groupBydailyPrice = (chartData: BmChart[]): any[] => {
     if (currentDate === r.date) {
       lastPrice = r.price;
     } else {
-      result.push({ date: res[i - 1].date, close: Number(lastPrice.toFixed(2)) });
+      result.push({ date: res[i - 1].date, close: Number(lastPrice.toFixed(8)) });
       currentDate = r.date;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Number(lastPrice.toFixed(2)) });
+  result.push({ date: res[res.length - 1].date, close: Number(lastPrice.toFixed(8)) });
   return result;
 };
 
@@ -56,7 +56,7 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
       cumclose += r.close;
       j++;
     } else {
-      result.push({ date: res[i - 1].date, close: Number((cumclose / j).toFixed(2)) * 2 });
+      result.push({ date: res[i - 1].date, close: Number((cumclose / j).toFixed(8)) * 2 });
 
       currentDate = r.date;
       cumclose = r.close;
@@ -64,7 +64,7 @@ export const groupByDailyTvl = (chartData: BmChart[]): ChartData[] => {
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Number((cumclose / j).toFixed(2)) * 2 });
+  result.push({ date: res[res.length - 1].date, close: Number((cumclose / j).toFixed(8)) * 2 });
 
   return result;
 };
@@ -91,14 +91,14 @@ export const groupBydailyVolume = (data: CommitmentTxHistory[]): ChartData[] => 
     if (currentDate === r.date) {
       totalVolume += r.volume;
     } else {
-      result.push({ date: res[i - 1].date, close: Number(totalVolume.toFixed(2)) });
+      result.push({ date: res[i - 1].date, close: Number(totalVolume.toFixed(8)) });
 
       currentDate = r.date;
       totalVolume = r.volume;
     }
   }
 
-  result.push({ date: res[res.length - 1].date, close: Number(totalVolume.toFixed(2)) });
+  result.push({ date: res[res.length - 1].date, close: Number(totalVolume.toFixed(8)) });
 
   return result;
 };
@@ -137,7 +137,7 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(poolData);
   const allTvlData = groupByDailyTvl(chartData);
-  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: Number((d.close / chartData[0].lpFeeTier).toFixed(2)) }));
+  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: Number((d.close / chartData[0].lpFeeTier).toFixed(8)) }));
   const lastElement = chartData[chartData.length - 1];
 
   // live current time data
