@@ -1,5 +1,6 @@
 import { BmChart, CALL_METHOD, ChartSummary, CommitmentTxHistory } from "@bitmatrix/models";
 import { ChartData } from "@bitmatrix/models";
+import { sortCommitmentHistoryTxs } from "../business/sortCommitmentHistoryTxs";
 import { CommitmentTxHistoryProvider } from "../providers/CommitmentTxHistoryProvider";
 
 const unitValue = 100000000;
@@ -130,7 +131,9 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
     key: string;
     val: CommitmentTxHistory;
   }[] = await commitmentTxHistoryProvider.getMany();
-  const data: CommitmentTxHistory[] = allCtxHistory.map((ach) => ach.val);
+  const sortedData = sortCommitmentHistoryTxs(allCtxHistory);
+
+  const data: CommitmentTxHistory[] = sortedData.map((ach) => ach.val);
 
   const poolData = data.filter((dt) => dt.poolId === poolId && dt.isSuccess);
 

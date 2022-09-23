@@ -5,7 +5,7 @@ type CTXHistoryResult = {
   val: CommitmentTxHistory;
 };
 
-export const sortCommitmentHistoryTxs = async (commitmentHistoryTxs: CTXHistoryResult[]): Promise<CTXHistoryResult[]> => {
+export const sortCommitmentHistoryTxs = (commitmentHistoryTxs: CTXHistoryResult[]): CTXHistoryResult[] => {
   const copyTxs = [...commitmentHistoryTxs];
 
   const sortedCommitmentHistoryTxs = copyTxs.sort((first: CTXHistoryResult, last: CTXHistoryResult) => {
