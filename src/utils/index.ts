@@ -140,7 +140,7 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
   const allPriceData = groupBydailyPrice(chartData);
   const allVolumeData = groupBydailyVolume(poolData);
   const allTvlData = groupByDailyTvl(chartData);
-  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: d.close / chartData[0].lpFeeTier }));
+  const allFeesData: ChartData[] = groupBydailyVolume(poolData).map((d) => ({ ...d, close: Number((d.close / chartData[0].lpFeeTier).toFixed(2)) }));
   const lastElement = chartData[chartData.length - 1];
 
   // live current time data
