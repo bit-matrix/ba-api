@@ -131,7 +131,7 @@ export const calculateChartData = async (chartData: BmChart[], poolId: string): 
     key: string;
     val: CommitmentTxHistory;
   }[] = await commitmentTxHistoryProvider.getMany();
-  const sortedData = sortCommitmentHistoryTxs(allCtxHistory);
+  const sortedData = sortCommitmentHistoryTxs(allCtxHistory, true);
 
   const data: CommitmentTxHistory[] = sortedData.map((ach) => ach.val);
 
